@@ -12,6 +12,12 @@ const turmaMateriaSchema = new mongoose.Schema({
         ref: 'Materia',
         require: true,
     },
+    diaSemana:{
+        type: Number,
+        require: true,
+        min: 0,
+        max: 6,
+    },
     createAt: {
         type: Date,
         default: Date.now

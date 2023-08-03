@@ -1,62 +1,47 @@
-const mongoose = require('../database/index')
+const mongoose = require('../database/index');
 const { Schema } = require('../database/index');
 
-
-const respostaSchema = new Schema({
-    pergunta: {
-        type: String,
-        required: true,
-    },
-    resposta: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 5,
-    },
-});
-
-// Defina o Schema para as considerações finais do feedback
-const consideracoesFinaisSchema = new Schema({
-    frase: {
-        type: String,
-        required: true,
-    },
-    nota: {
-        type: Number,
-        required: true,
-        min: 1,
-        max: 5,
-    },
-});
-
 const feedbackSchema = new mongoose.Schema({
-    instituicao: {
+    turmaMateria: {
         type: Schema.Types.ObjectId,
-        ref: 'Instituicao',
-        required: true,
+        ref: 'TurmaMateria',
+        require: true,
     },
-    turma: {
-        type: Schema.Types.ObjectId,
-        ref: 'Turma',
-        required: true,
-    },
-    materia: {
-        type: Schema.Types.ObjectId,
-        ref: 'Materia',
-        required: true,
-    },
-    user: {
+    aluno: {
         type: Schema.Types.ObjectId,
         ref: 'User',
         require: true,
     },
-    respostas: [respostaSchema], // Array de respostas
-    consideracoesFinais: consideracoesFinaisSchema, // Considerações finais
+    perguntasRespostas: [{
+        pergunta: {
+            type: Schema.Types.ObjectId,
+            ref: 'Pergunta',
+            require: true,
+        },
+        resposta: {
+            type: Number,
+            require: true,
+            min: 1,
+            max: 5,
+        },
+    }],
+    consideracoesFinais: {
+        comentario: {
+            type: String,
+            require: true,
+        },
+        nota: {
+            type: Number,
+            require: true,
+            min: 1,
+            max: 5,
+        },
+    },
     createAt: {
         type: Date,
-        default: Date.now
+        default: Date.now,
     }
-})
+});
 
 const Feedback = mongoose.model('Feedback', feedbackSchema);
 

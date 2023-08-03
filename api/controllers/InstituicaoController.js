@@ -1,16 +1,25 @@
 const Instituicao = require('../models/InstituicaoModel')
 const Plano = require('../models/PlanoModel')
+const { cnpj } = require('cpf-cnpj-validator');
 
 class InstituicaoController {
     static async criarInstituicao(req, res) {
-        const { nome, endereco, sigla, email } = req.body
+        const { nome, endereco, sigla, email, instCnpj } = req.body
         const { idplano } = req.headers;
         try {
+
+            const cnpjFormatted = cnpj.format(instCnpj);
+
+            if (!cnpj.isValid(cnpjFormatted)) {
+                return res.status(400).json({ error: 'CNPJ inválido' });
+            }
+
             const inst = await Instituicao.create({
                 nome,
                 endereco,
                 email,
                 sigla,
+                cnpj: instCnpj,
                 plano: idplano,
             })
             return res.status(200).json(inst)
