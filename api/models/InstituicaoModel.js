@@ -11,11 +11,15 @@ const instituicaoSchema = new mongoose.Schema({
         type: String,
         require: true
     },
-    email:{
+    email: {
         type: String,
         require: true
     },
     sigla: {
+        type: String,
+        require: true
+    },
+    cnpj: {
         type: String,
         require: true
     },

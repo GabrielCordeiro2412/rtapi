@@ -6,11 +6,16 @@ class RewardsController {
         const { title, points, quantity } = req.body;
         const { instituicaoid } = req.headers;
 
+        const parsedQuantity = parseInt(quantity, 10);
+        if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+            return res.status(400).json({ error: 'A quantidade deve ser um número maior que zero' });
+        }
+
         try {
             const novaRecompensa = await Rewards.create({
                 title,
                 points,
-                quantity,
+                quantity: parsedQuantity,
                 instituicao: instituicaoid,
             });
 

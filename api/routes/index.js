@@ -5,6 +5,10 @@ const materia = require('../routes/MateriaRoutes')
 const turma = require('../routes/TurmaRoutes')
 const rewards = require('../routes/RewardsRoutes')
 const usuario = require('../routes/UserRoutes')
+const userRewards = require('../routes/UserRewardsRoutes')
+const turmaMateria = require('../routes/TurmaMateriaRoutes')
+const pergunta = require('../routes/PerguntaRoutes')
+const feedback = require('../routes/FeedbackRoutes')
 
 module.exports = app => {
     app.use(bodyParser.json(),
@@ -14,6 +18,10 @@ module.exports = app => {
     materia,
     turma,
     rewards,
-    usuario
+    usuario,
+    userRewards,
+    turmaMateria,
+    pergunta,
+    feedback
     );
 }
