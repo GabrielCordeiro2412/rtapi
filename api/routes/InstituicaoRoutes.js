@@ -4,6 +4,7 @@ const InstituicaoController = require('../controllers/InstituicaoController')
 const router = Router()
 router
     .post('/instituicao', InstituicaoController.criarInstituicao)
+    .post('/instituicao/create-intent', InstituicaoController.createIntent)
     .get('/instituicao', InstituicaoController.todasInsituicoes)
     .delete('/instituicao/:id/remover', InstituicaoController.removerInstituicao)
     .get('/instituicao/:instituicaoId', InstituicaoController.exibirInstituicao)

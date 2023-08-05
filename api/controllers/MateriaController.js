@@ -1,3 +1,4 @@
+const Instituicao = require('../models/InstituicaoModel');
 const Materia = require('../models/MateriaModel');
 
 class MateriaController {
@@ -6,6 +7,13 @@ class MateriaController {
         const { instituicaoid } = req.headers;
 
         try {
+
+            const inst = await Instituicao.findById(instituicaoid)
+
+            if(!inst){
+                return res.status(404).json({ error: 'Instituição não encontrada' });
+            }
+
             const novaMateria = await Materia.create({
                 nome,
                 instituicao: instituicaoid,

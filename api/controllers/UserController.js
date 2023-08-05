@@ -63,7 +63,7 @@ class UserController {
 
         try {
             // Busca o usuário pelo e-mail
-            const usuario = await User.findOne({ email });
+            const usuario = await User.findOne({ email }).populate('instituicao turma');
 
             // Verifica se o usuário foi encontrado
             if (!usuario) {

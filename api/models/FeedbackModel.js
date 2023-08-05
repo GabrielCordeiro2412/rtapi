@@ -37,6 +37,10 @@ const feedbackSchema = new mongoose.Schema({
             max: 5,
         },
     },
+    concluded:{
+        type: Boolean,
+        default: false,
+    },
     createAt: {
         type: Date,
         default: Date.now,

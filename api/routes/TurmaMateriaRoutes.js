@@ -8,6 +8,7 @@ router.post('/turmamateria/criar', TurmaMateriaController.criarTurmaMateria)
     .put('/turmamateria/:turmaMateriaId', TurmaMateriaController.atualizarTurmaMateria)
     .delete('/turmamateria/:turmaMateriaId', TurmaMateriaController.deletarTurmaMateria)
     .get('/turmamateria/usuarios/:turmaMateriaId', TurmaMateriaController.buscarUsuariosPorTurmaMateria)
-    .get('/turmamateria/:turmaId', TurmaMateriaController.buscarTurmaMateriaPorTurma)
+    .get('/turmamateria/turma/:turmaId', TurmaMateriaController.buscarTurmaMateriaPorTurma)
+    .get('/turmamateria/verifica/:turmaId', TurmaMateriaController.buscarTurmaMateriaPorTurmaFeedback)
 
 module.exports = router;

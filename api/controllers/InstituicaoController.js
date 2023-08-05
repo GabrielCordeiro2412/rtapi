@@ -1,14 +1,44 @@
 const Instituicao = require('../models/InstituicaoModel')
 const Plano = require('../models/PlanoModel')
 const { cnpj } = require('cpf-cnpj-validator');
-
+const stripe = require('stripe')(process.env.SECRET_STRIPE_CODE);
 class InstituicaoController {
+
+    static async createIntent(req, res) {
+        const { idplano } = req.headers;
+        try {
+
+            const plano = await Plano.findById(idplano)
+
+            if (!plano) {
+                return res.status(404).json({ Mensagem: "Plano não Encontrado" })
+            }
+
+            const paymentIntent = await stripe.paymentIntents.create({
+                amount: plano.valor * 100,
+                currency: 'brl',
+            });
+            const clientSecret = paymentIntent.client_secret
+            return res.send({ clientSecret })
+        } catch (error) {
+            return res.json(error)
+        }
+    }
+
     static async criarInstituicao(req, res) {
         const { nome, endereco, sigla, email, instCnpj } = req.body
         const { idplano } = req.headers;
         try {
 
             const cnpjFormatted = cnpj.format(instCnpj);
+
+            const plano = await Plano.findById(idplano)
+
+            if (!plano) {
+                return res.status(404).json({ Mensagem: "Plano não Encontrado" })
+            }
+
+            console.log(plano)
 
             if (!cnpj.isValid(cnpjFormatted)) {
                 return res.status(400).json({ error: 'CNPJ inválido' });
@@ -22,7 +52,10 @@ class InstituicaoController {
                 cnpj: instCnpj,
                 plano: idplano,
             })
-            return res.status(200).json(inst)
+
+            return res.status(200).json({
+                inst,
+            })
         } catch (error) {
             return res.json(error)
         }

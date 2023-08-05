@@ -1,12 +1,23 @@
 const TurmaMateria = require('../models/TurmaMateriaModel');
 const User = require('../models/UserModel');
+const Turma = require('../models/TurmaModel');
+const Materia = require('../models/MateriaModel');
+const Feedback = require('../models/FeedbackModel');
 
 class TurmaMateriaController {
     // Cria uma nova relação entre turma e matéria
     static async criarTurmaMateria(req, res) {
-        const { turmaid, materiaid, diaSemana } = req.headers;
+        const { turmaid, materiaid } = req.headers;
+        const { diaSemana } = req.body;
 
         try {
+            const turma = await Turma.findById(turmaid);
+            const materia = await Materia.findById(materiaid);
+            if (!turma) {
+                return res.status(404).json({ error: 'Turma não encontrada' });
+            } else if (!materia) {
+                return res.status(404).json({ error: 'Materia não encontrada' });
+            }
             const novaTurmaMateria = await TurmaMateria.create({
                 turma: turmaid,
                 materia: materiaid,
@@ -115,9 +126,46 @@ class TurmaMateriaController {
 
         try {
             // Busca todas as TurmaMateria relacionadas à turma
-            const turmaMateria = await TurmaMateria.find({ turma: turmaId });
+            const turmaMateria = await TurmaMateria.find({ turma: turmaId }).populate('turma materia');
 
             return res.status(200).json(turmaMateria);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Erro ao buscar TurmaMateria por turma' });
+        }
+    }
+
+    static async buscarTurmaMateriaPorTurmaFeedback(req, res) {
+        const { turmaId } = req.params;
+        const { userid } = req.headers;
+
+        try {
+            // Busca todas as TurmaMateria relacionadas à turma
+            const turmasMaterias = await TurmaMateria.find({ turma: turmaId }).populate('turma materia');
+
+            // Verifica se existe um feedback do aluno para cada TurmaMateria no dia atual
+            const dataAtual = new Date();
+            dataAtual.setHours(0, 0, 0, 0); // Definir a hora para 00:00:00 do dia atual
+
+            for (let i = 0; i < turmasMaterias.length; i++) {
+                const turmaMateria = turmasMaterias[i];
+                const turmaMateriaId = turmaMateria._id;
+
+                // Busca o feedback do aluno para a TurmaMateria no dia atual
+                const feedbackExistente = await Feedback.findOne({
+                    turmaMateria: turmaMateriaId,
+                    aluno: userid, // Substitua por como você obtém o ID do aluno (dependendo de como é feita a autenticação do usuário)
+                    createAt: { $gte: dataAtual }, // Filtrar feedbacks criados a partir da data atual
+                });
+
+                // Adiciona a propriedade "concluido" com valor "sim" se houver um feedback criado hoje ou "não" caso contrário
+                turmasMaterias[i] = {
+                    ...turmaMateria.toObject(),
+                    concluido: feedbackExistente ? true : false,
+                };
+            }
+
+            return res.status(200).json(turmasMaterias);
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Erro ao buscar TurmaMateria por turma' });

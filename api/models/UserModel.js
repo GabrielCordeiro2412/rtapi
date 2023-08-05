@@ -29,7 +29,12 @@ const userSchema = new mongoose.Schema({
         require: true,
         default: false
     },
-    points:{
+    spoints:{
+        type: Number,
+        require: true,
+        default: 0
+    },
+    bpoints:{
         type: Number,
         require: true,
         default: 0

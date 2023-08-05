@@ -4,22 +4,28 @@ const User = require('../models/UserModel');
 class FeedbackController {
     // Cria um novo feedback
     static async criarFeedback(req, res) {
-        const { perguntasRespostas, consideracoesFinais, nota } = req.body;
-        const { alunoid, turmaMateriaid } = req.headers;
+        const { perguntasRespostas, consideracoesFinais, concluded } = req.body;
+        const { alunoid, turmamateriaid } = req.headers;
+        console.log(req.headers)
 
         try {
+
+            const dataAtual = new Date();
+            dataAtual.setHours(0, 0, 0, 0);
+
             const novoFeedback = await Feedback.create({
-                turmaMateria: turmaMateriaid,
+                turmaMateria: turmamateriaid,
                 aluno: alunoid,
                 perguntasRespostas,
                 consideracoesFinais,
-                nota,
+                concluded,
+                createAt: dataAtual
             });
 
             // Adiciona 10 pontos ao usuário
             const usuario = await User.findById(alunoid);
             if (usuario) {
-                usuario.points += 10;
+                usuario.spoints += 10;
                 await usuario.save();
             }
 
@@ -105,6 +111,31 @@ class FeedbackController {
             return res.status(200).json({ message: 'Feedback excluído com sucesso' });
         } catch (error) {
             return res.status(500).json({ error: 'Erro ao excluir o feedback' });
+        }
+    }
+
+    static async verificaFeedback(req, res) {
+        const { turmaMateriaid, alunoid } = req.headers;
+        const dataAtual = new Date();
+        dataAtual.setHours(0, 0, 0, 0); // Definir a hora para 00:00:00 do dia atual
+
+        try {
+            // Verificar se há um feedback para a TurmaMateria com o aluno e data atual
+            const feedbackExistente = await Feedback.findOne({
+                turmaMateria: turmaMateriaid,
+                aluno: alunoid,
+                createAt: { $gte: dataAtual }, // Filtrar feedbacks criados a partir da data atual
+            });
+
+            if (feedbackExistente) {
+                // Se houver um feedback criado hoje, retornar true
+                return res.status(200).send(feedbackExistente);
+            } else {
+                // Se não houver um feedback criado hoje, retornar false
+                return res.status(404).json({ Mensagem: 'Nenhum feedback deste aluno para esta matéria hoje' });
+            }
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao validar o feedback' });
         }
     }
 }
