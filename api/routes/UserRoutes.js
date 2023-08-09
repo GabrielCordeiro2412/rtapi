@@ -9,6 +9,9 @@ router.post('/usuario', UserController.criarUsuario)
     .put('/usuario/:usuarioId', UserController.atualizarUsuario)
     .delete('/usuario/:usuarioId', UserController.deletarUsuario)
     .post('/login', UserController.login)
-    .get('/createplan', UserController.criarPlano)
+    .get('/usuario/pontos/:userId', UserController.getPontosUsuario)
+    .post('/usuario/forgotpassword', UserController.forgotPassword)
+    .post('/usuario/resetpassword', UserController.resetPassword)
+    .post('/usuario/validateCode', UserController.validatePassCode)
 
 module.exports = router;

@@ -7,7 +7,8 @@ router
     .post('/instituicao/create-intent', InstituicaoController.createIntent)
     .get('/instituicao', InstituicaoController.todasInsituicoes)
     .delete('/instituicao/:id/remover', InstituicaoController.removerInstituicao)
-    .get('/instituicao/:instituicaoId', InstituicaoController.exibirInstituicao)
+    .get('/instituicao/exibe/:instituicaoId', InstituicaoController.exibirInstituicao)
     .put('/instituicao/:instituicaoId', InstituicaoController.atualizarInstituicao)
-    .put('/instituicao/:instituicaoId/upgrade-plano/:planoId', InstituicaoController.atualizarPlano);
+    .put('/instituicao/:instituicaoId/upgrade-plano/:planoId', InstituicaoController.atualizarPlano)
+    .get('/instituicao/bycod', InstituicaoController.getInstByCodigo)
 module.exports = router

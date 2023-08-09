@@ -18,28 +18,25 @@ const userSchema = new mongoose.Schema({
     },
     cpf: {
         type: String,
+        unique: true,
         require: true,
     },
-    dtNascimento:{
-        type: Date,
-        require: true,
-    },
-    parentsControl:{
+    parentsControl: {
         type: Boolean,
         require: true,
         default: false
     },
-    spoints:{
+    spoints: {
         type: Number,
         require: true,
         default: 0
     },
-    bpoints:{
+    bpoints: {
         type: Number,
         require: true,
         default: 0
     },
-    passwordParents:{
+    passwordParents: {
         type: String,
         require: false,
     },
@@ -52,6 +49,22 @@ const userSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Turma',
         require: true,
+    },
+    passwordResetToken: {
+        type: String,
+        select: false
+    },
+    passwordResetExpires: {
+        type: Date,
+        select: false
+    },
+    EmailResetToken: {
+        type: String,
+        select: false
+    },
+    EmailResetExpires: {
+        type: Date,
+        select: false
     },
     createAt: {
         type: Date,

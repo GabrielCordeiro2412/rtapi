@@ -113,6 +113,18 @@ class TurmaController {
             return res.status(500).json({ error: 'Erro ao buscar os usuários da turma' });
         }
     }
+
+    static async buscarTurmasPorInstituicao(req, res) {
+        const { instituicaoId } = req.params;
+
+        try {
+            const turmas = await Turma.find({ instituicao: instituicaoId });
+
+            return res.status(200).json(turmas);
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao buscar turmas' });
+        }
+    }
 }
 
 module.exports = TurmaController;

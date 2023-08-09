@@ -9,5 +9,6 @@ router.post('/turma', TurmaController.criarTurma)
     .put('/turma/:turmaId', TurmaController.atualizarTurma)
     .delete('/turma/:turmaId', TurmaController.deletarTurma)
     .post('/turma/usuario', TurmaController.buscarUsuariosPorTurma)
+    .get('/turma/instituicao/:instituicaoId', TurmaController.buscarTurmasPorInstituicao);
 
 module.exports = router;

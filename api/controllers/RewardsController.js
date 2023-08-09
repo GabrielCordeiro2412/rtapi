@@ -91,6 +91,18 @@ class RewardsController {
             return res.status(500).json({ error: 'Erro ao excluir a recompensa' });
         }
     }
+
+    static async getRewardsPorInstituicao(req, res) {
+        const { instituicaoId } = req.params;
+
+        try {
+            const rewards = await Rewards.find({ instituicao: instituicaoId });
+
+            return res.status(200).json(rewards);
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao obter os rewards da instituição' });
+        }
+    }
 }
 
 module.exports = RewardsController;

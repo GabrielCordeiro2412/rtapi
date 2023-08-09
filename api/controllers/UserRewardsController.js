@@ -1,5 +1,6 @@
 const UserRewards = require('../models/UserRewardsModel')
 const Rewards = require('../models/RewardsModel');
+const User = require('../models/UserModel');
 
 
 class UserRewardsController {
@@ -10,7 +11,7 @@ class UserRewardsController {
         try {
             // Busca o registro do Reward pelo ID
             const reward = await Rewards.findById(rewardsid);
-
+            const user = await User.findById(userid)
             if (!reward) {
                 return res.status(404).json({ error: 'Reward não encontrado' });
             }
@@ -18,6 +19,10 @@ class UserRewardsController {
             // Verifica se ainda há disponibilidade do Reward
             if (reward.quantity <= 0) {
                 return res.status(400).json({ error: 'Reward esgotado' });
+            }
+
+            if (user.spoints < reward.points) {
+                return res.status(400).json({ error: 'Pontos insuficientes para adquirir o reward' });
             }
 
             // Cria o novo registro de UserRewards
@@ -29,6 +34,8 @@ class UserRewardsController {
             // Atualiza a quantidade disponível do Reward
             reward.quantity -= 1;
             await reward.save();
+            user.spoints -= reward.points;
+            await user.save();
 
             return res.status(201).json(newUserRewards);
         } catch (error) {
@@ -120,7 +127,7 @@ class UserRewardsController {
                 return res.status(404).json({ error: 'UserReward não encontrado', existe: false });
             }
 
-            return res.status(200).json({userReward, existe: true});
+            return res.status(200).json({ userReward, existe: true });
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Erro ao obter o UserReward' });

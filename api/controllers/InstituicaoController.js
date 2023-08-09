@@ -156,6 +156,22 @@ class InstituicaoController {
             return res.json(error);
         }
     }
+
+    static async getInstByCodigo(req, res) {
+        const { codigo } = req.headers;
+
+        try {
+            const instituicao = await Instituicao.findOne({ codigo });
+
+            if (!instituicao) {
+                return res.status(404).json({ error: 'Instituição não encontrada' });
+            }
+
+            return res.status(200).json(instituicao);
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao obter a instituição' });
+        }
+    }
 }
 
 module.exports = InstituicaoController

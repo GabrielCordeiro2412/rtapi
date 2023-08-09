@@ -103,6 +103,12 @@ class FeedbackController {
 
         try {
             const feedback = await Feedback.findByIdAndDelete(feedbackId);
+            const aluno = await User.findById(feedback.aluno)
+
+            if (aluno) {
+                aluno.spoints -= 10;
+                await aluno.save();
+            }
 
             if (!feedback) {
                 return res.status(404).json({ error: 'Feedback não encontrado' });
