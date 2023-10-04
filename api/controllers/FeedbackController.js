@@ -6,7 +6,7 @@ class FeedbackController {
     static async criarFeedback(req, res) {
         const { perguntasRespostas, consideracoesFinais, concluded } = req.body;
         const { alunoid, turmamateriaid } = req.headers;
-        console.log(req.headers)
+        console.log(req.body)
 
         try {
 

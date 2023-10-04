@@ -60,24 +60,25 @@ class UserController {
     //Login do usuario
     static async login(req, res) {
         const { email, password } = req.body;
-
+        console.log(req.body)
         try {
             // Busca o usuário pelo e-mail
-            const usuario = await User.findOne({ email }).populate('instituicao turma');
+            const usuarioEmailExistente = await User.findOne({ email });
             // Verifica se o usuário foi encontrado
-            if (!usuario) {
+            console.log(usuarioEmailExistente)
+            if (!usuarioEmailExistente) {
                 return res.status(401).json({ error: 'E-mail ou senha inválidos' });
             }
 
             // Verifica se a senha fornecida coincide com a senha armazenada no banco de dados
-            const senhaCorreta = bcrypt.compare(password, usuario.password);
+            const senhaCorreta = await bcrypt.compare(password, usuarioEmailExistente.password);
             if (!senhaCorreta) {
                 return res.status(401).json({ error: 'E-mail ou senha inválidos' });
             }
 
-            usuario.password = undefined;
+            usuarioEmailExistente.password = undefined;
 
-            return res.status(200).json({ usuario, token: generateToken({ id: usuario.id }) });
+            return res.status(200).json({ usuarioEmailExistente, token: generateToken({ id: usuarioEmailExistente.id }) });
         } catch (error) {
             console.log(error)
             return res.status(500).json({ error: 'Erro ao fazer login' });
@@ -264,7 +265,7 @@ class UserController {
 
             await user.save();
 
-            return res.send({message: 'Senha alterada com sucesso!'});
+            return res.send({ message: 'Senha alterada com sucesso!' });
 
 
         } catch (err) {

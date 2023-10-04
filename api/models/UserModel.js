@@ -58,14 +58,6 @@ const userSchema = new mongoose.Schema({
         type: Date,
         select: false
     },
-    EmailResetToken: {
-        type: String,
-        select: false
-    },
-    EmailResetExpires: {
-        type: Date,
-        select: false
-    },
     createAt: {
         type: Date,
         default: Date.now

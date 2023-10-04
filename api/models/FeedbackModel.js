@@ -16,11 +16,11 @@ const feedbackSchema = new mongoose.Schema({
         pergunta: {
             type: Schema.Types.ObjectId,
             ref: 'Pergunta',
-            require: true,
+            require: false,
         },
         resposta: {
             type: Number,
-            require: true,
+            require: false,
             min: 1,
             max: 5,
         },
