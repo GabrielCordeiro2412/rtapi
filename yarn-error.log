@@ -1,30 +1,28 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\grodr\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add nodemailer-pool
+  /usr/local/bin/node /opt/homebrew/Cellar/yarn/1.22.19/libexec/bin/yarn.js add socket.io
 
 PATH: 
-  C:\Program Files\Microsoft\jdk-11.0.18.10-hotspot\bin;C:\Program Files (x86)\VMware\VMware Workstation\bin\;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Python311\Scripts\;C:\Python311\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;C:\Users\grodr\AppData\Local\Android\Sdk\platform-tools;C:\Program Files\Gradle\gradle-5.6.4\bin;C:\Program Files\nodejs\;C:\tools\gsudo\Current;C:\Program Files\MySQL\MySQL Utilities 1.6\;C:\Program Files\MySQL\MySQL Server 8.0\bin;;C:\Program Files\Docker\Docker\resources\bin;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\grodr\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\grodr\AppData\Local\Programs\Python\Python310\;C:\Users\grodr\AppData\Local\Microsoft\WindowsApps;C:\Users\grodr\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\grodr\AppData\Roaming\npm;C:\Users\grodr\.dotnet\tools
+  /Library/Frameworks/Python.framework/Versions/3.12/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Library/Apple/usr/bin:/Library/Frameworks/Python.framework/Versions/3.12/bin:/opt/homebrew/bin:/opt/homebrew/sbin
 
 Yarn version: 
   1.22.19
 
 Node version: 
-  18.16.0
+  18.18.0
 
 Platform: 
-  win32 x64
+  darwin arm64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/nodemailer-pool: Not found
-      at params.callback [as _callback] (C:\Users\grodr\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:66145:18)
-      at self.callback (C:\Users\grodr\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:140890:22)
-      at Request.emit (node:events:513:28)
-      at Request.<anonymous> (C:\Users\grodr\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141862:10)
-      at Request.emit (node:events:513:28)
-      at IncomingMessage.<anonymous> (C:\Users\grodr\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141784:12)
-      at Object.onceWrapper (node:events:627:28)
-      at IncomingMessage.emit (node:events:525:35)
-      at endReadableNT (node:internal/streams/readable:1359:12)
-      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+  Error: connect EHOSTUNREACH 2606:4700::6810:1822:443 - Local (:::49666)
+      at internalConnect (node:net:1100:16)
+      at defaultTriggerAsyncIdScope (node:internal/async_hooks:463:18)
+      at emitLookup (node:net:1381:9)
+      at /opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:103587:28
+      at /opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:103496:13
+      at module.exports.RawTask.call (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:79584:19)
+      at flush (/opt/homebrew/Cellar/yarn/1.22.19/libexec/lib/cli.js:79666:29)
+      at process.processTicksAndRejections (node:internal/process/task_queues:77:11)
 
 npm manifest: 
   {
@@ -40,7 +38,7 @@ npm manifest:
     "author": "",
     "license": "ISC",
     "devDependencies": {
-      "nodemon": "^2.0.22"
+      "nodemon": "^3.0.1"
     },
     "dependencies": {
       "bcryptjs": "^2.4.3",
@@ -55,7 +53,8 @@ npm manifest:
       "mongoose": "^7.4.1",
       "morgan": "^1.10.0",
       "nodemailer": "^6.9.4",
-      "path": "^0.12.7"
+      "path": "^0.12.7",
+      "stripe": "^12.16.0"
     }
   }
 
@@ -107,7 +106,7 @@ Lockfile:
     dependencies:
       "@hapi/hoek" "^9.0.0"
   
-  "@types/node@*":
+  "@types/node@*", "@types/node@>=8.1.0":
     version "20.4.5"
     resolved "https://registry.npmjs.org/@types/node/-/node-20.4.5.tgz"
     integrity sha512-rt40Nk13II9JwQBdeYqmbn2Q6IVTA5uPhvSO+JVqdXw/6/4glI6oR9ezty/A9Hg5u7JH4OmYmuQ+XvjKm0Datg==
@@ -449,7 +448,7 @@ Lockfile:
   
   fsevents@~2.3.2:
     version "2.3.2"
-    resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
+    resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
     integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
   
   function-bind@^1.1.1:
@@ -736,18 +735,18 @@ Lockfile:
     resolved "https://registry.npmjs.org/nodemailer/-/nodemailer-6.9.4.tgz"
     integrity sha512-CXjQvrQZV4+6X5wP6ZIgdehJamI63MFoYFGGPtHudWym9qaEHDNdPzaj5bfMCvxG1vhAileSWW90q7nL0N36mA==
   
-  nodemon@^2.0.22:
-    version "2.0.22"
-    resolved "https://registry.npmjs.org/nodemon/-/nodemon-2.0.22.tgz"
-    integrity sha512-B8YqaKMmyuCO7BowF1Z1/mkPqLk6cs/l63Ojtd6otKjMx47Dq1utxfRxcavH1I7VSaL8n5BUaoutadnsX3AAVQ==
+  nodemon@^3.0.1:
+    version "3.0.1"
+    resolved "https://registry.yarnpkg.com/nodemon/-/nodemon-3.0.1.tgz#affe822a2c5f21354466b2fc8ae83277d27dadc7"
+    integrity sha512-g9AZ7HmkhQkqXkRc20w+ZfQ73cHLbE8hnPbtaFbFtCumZsjyMhKk9LajQ07U5Ux28lvFjZ5X7HvWR1xzU8jHVw==
     dependencies:
       chokidar "^3.5.2"
       debug "^3.2.7"
       ignore-by-default "^1.0.1"
       minimatch "^3.1.2"
       pstree.remy "^1.1.8"
-      semver "^5.7.1"
-      simple-update-notifier "^1.0.7"
+      semver "^7.5.3"
+      simple-update-notifier "^2.0.0"
       supports-color "^5.5.0"
       touch "^3.1.0"
       undefsafe "^2.0.5"
@@ -839,7 +838,7 @@ Lockfile:
     resolved "https://registry.npmjs.org/punycode/-/punycode-2.3.0.tgz"
     integrity sha512-rRV+zQD8tVFys26lAGR9WUuS4iUAngJScM+ZRSKtvl5tKeZ2t5bvdNFdNHBW9FWR4guGHlgmsZ1G7BSm2wTbuA==
   
-  qs@6.11.0:
+  qs@6.11.0, qs@^6.11.0:
     version "6.11.0"
     resolved "https://registry.npmjs.org/qs/-/qs-6.11.0.tgz"
     integrity sha512-MvjoMCJwEarSbUYk5O+nmoSzSutSsTwF85zcHPQ9OrlFoZOYIjaqBAJIqIXjptyD5vThxGq52Xu/MaJzRkIk4Q==
@@ -900,22 +899,12 @@ Lockfile:
     dependencies:
       sparse-bitfield "^3.0.3"
   
-  semver@^5.7.1:
-    version "5.7.1"
-    resolved "https://registry.npmjs.org/semver/-/semver-5.7.1.tgz"
-    integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
-  
-  semver@^7.3.8:
+  semver@^7.3.8, semver@^7.5.3:
     version "7.5.4"
     resolved "https://registry.npmjs.org/semver/-/semver-7.5.4.tgz"
     integrity sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==
     dependencies:
       lru-cache "^6.0.0"
-  
-  semver@~7.0.0:
-    version "7.0.0"
-    resolved "https://registry.npmjs.org/semver/-/semver-7.0.0.tgz"
-    integrity sha512-+GB6zVA9LWh6zovYQLALHwv5rb2PHGlJi3lfiqIHxR0uuwCgefcOJc59v9fv1w8GbStwxuuqqAjI9NMAOOgq1A==
   
   send@0.18.0:
     version "0.18.0"
@@ -965,12 +954,12 @@ Lockfile:
     resolved "https://registry.npmjs.org/sift/-/sift-16.0.1.tgz"
     integrity sha512-Wv6BjQ5zbhW7VFefWusVP33T/EM0vYikCaQ2qR8yULbsilAT8/wQaXvuQ3ptGLpoKx+lihJE3y2UTgKDyyNHZQ==
   
-  simple-update-notifier@^1.0.7:
-    version "1.1.0"
-    resolved "https://registry.npmjs.org/simple-update-notifier/-/simple-update-notifier-1.1.0.tgz"
-    integrity sha512-VpsrsJSUcJEseSbMHkrsrAVSdvVS5I96Qo1QAQ4FxQ9wXFcB+pjj7FB7/us9+GcgfW4ziHtYMc1J0PLczb55mg==
+  simple-update-notifier@^2.0.0:
+    version "2.0.0"
+    resolved "https://registry.yarnpkg.com/simple-update-notifier/-/simple-update-notifier-2.0.0.tgz#d70b92bdab7d6d90dfd73931195a30b6e3d7cebb"
+    integrity sha512-a2B9Y0KlNXl9u/vsW6sTIu9vGEpfKu2wRV6l1H3XEas/0gUIzGzBoP/IouTcUQbm9JWZLH3COxyn03TYlFax6w==
     dependencies:
-      semver "~7.0.0"
+      semver "^7.5.3"
   
   smart-buffer@^4.2.0:
     version "4.2.0"
@@ -996,6 +985,14 @@ Lockfile:
     version "2.0.1"
     resolved "https://registry.npmjs.org/statuses/-/statuses-2.0.1.tgz"
     integrity sha512-RwNA9Z/7PrK06rYLIzFMlaF+l73iwpzsqRIFgbMLbTcLD6cOao82TaWefPXQvB2fOC4AjuYSEndS7N/mTCbkdQ==
+  
+  stripe@^12.16.0:
+    version "12.16.0"
+    resolved "https://registry.npmjs.org/stripe/-/stripe-12.16.0.tgz"
+    integrity sha512-iwVkyZsS9KsWmEVK5qnbPeX/m94+Z3fXIRU7Q4iNBS2Zuj1spGIjLKMN3tejUs/ZZ2o7dCYFJvVdC2aZMYo8GA==
+    dependencies:
+      "@types/node" ">=8.1.0"
+      qs "^6.11.0"
   
   supports-color@^5.5.0:
     version "5.5.0"

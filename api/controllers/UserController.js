@@ -63,7 +63,7 @@ class UserController {
         console.log(req.body)
         try {
             // Busca o usuário pelo e-mail
-            const usuarioEmailExistente = await User.findOne({ email });
+            const usuarioEmailExistente = await User.findOne({ email }).populate('turma instituicao');
             // Verifica se o usuário foi encontrado
             console.log(usuarioEmailExistente)
             if (!usuarioEmailExistente) {
@@ -78,7 +78,7 @@ class UserController {
 
             usuarioEmailExistente.password = undefined;
 
-            return res.status(200).json({ usuarioEmailExistente, token: generateToken({ id: usuarioEmailExistente.id }) });
+            return res.status(200).json({ usuario: usuarioEmailExistente, token: generateToken({ id: usuarioEmailExistente.id }) });
         } catch (error) {
             console.log(error)
             return res.status(500).json({ error: 'Erro ao fazer login' });
