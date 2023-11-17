@@ -1,5 +1,6 @@
 const Feedback = require('../models/FeedbackModel');
 const User = require('../models/UserModel');
+const TurmaMateria = require('../models/TurmaMateriaModel')
 
 class FeedbackController {
     // Cria um novo feedback

@@ -13,5 +13,6 @@ router.post('/usuario', UserController.criarUsuario)
     .post('/usuario/forgotpassword', UserController.forgotPassword)
     .post('/usuario/resetpassword', UserController.resetPassword)
     .post('/usuario/validateCode', UserController.validatePassCode)
+    .get('/usuario/inst/:inst', UserController.getUserByInstituicao)
 
 module.exports = router;

@@ -6,6 +6,7 @@ const authConfig = require('../config/auth.json');
 const enviarEmail = require('../functions/sendMail')
 const stripe = require('stripe')('sk_test_51Mw9XNBzmAAATyiFwz37GfPX2Mw8yGNCNl1X6xjTTA5gqhkXtaT0IMzmc1m9N4KV3RsiOwl1TaIDKWshZC7lwHOI00wtU8SOot');
 const crypto = require('crypto');
+const Instituicao = require('../models/InstituicaoModel');
 
 
 function generateToken(params = {}) {
@@ -270,6 +271,19 @@ class UserController {
 
         } catch (err) {
             return res.send({ error: "Erro ao alterar a senha!" })
+        }
+    }
+
+    static async getUserByInstituicao(req, res) {
+        const {inst} = req.params;
+        console.log(inst)
+        try {
+            const usuarios = await User.find({instituicao: inst}).populate('instituicao turma');
+
+            return res.status(200).json(usuarios);
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao listar os usuários' });
+            //console.log(error)
         }
     }
 }
