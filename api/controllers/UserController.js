@@ -276,7 +276,6 @@ class UserController {
 
     static async getUserByInstituicao(req, res) {
         const {inst} = req.params;
-        console.log(inst)
         try {
             const usuarios = await User.find({instituicao: inst}).populate('instituicao turma');
 
