@@ -2,24 +2,20 @@ const mongoose = require('../database/index')
 const { Schema } = require('../database/index');
 
 const messageSchema = new mongoose.Schema({
-    from: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        require: true,
+    chatId: {
+        type: String,
+        require: true
     },
-    to: {
-        type: Schema.Types.ObjectId,
-        ref: 'User',
-        require: true,
+    senderId: {
+        type: String,
+        require: true
     },
     text: {
         type: String,
         require: true
-    },
-    createAt: {
-        type: Date,
-        default: Date.now
     }
+}, {
+    timestamps: true
 })
 
 const Message = mongoose.model('Message', messageSchema);

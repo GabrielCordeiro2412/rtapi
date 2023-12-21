@@ -9,6 +9,8 @@ const userRewards = require('../routes/UserRewardsRoutes')
 const turmaMateria = require('../routes/TurmaMateriaRoutes')
 const pergunta = require('../routes/PerguntaRoutes')
 const feedback = require('../routes/FeedbackRoutes')
+const chat = require('../routes/ChatRoutes')
+const message = require('../routes/MessageRoutes')
 
 module.exports = app => {
     app.use(bodyParser.json(),
@@ -22,6 +24,8 @@ module.exports = app => {
     userRewards,
     turmaMateria,
     pergunta,
-    feedback
+    feedback,
+    chat,
+    message
     );
 }

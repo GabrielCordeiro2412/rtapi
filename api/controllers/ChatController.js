@@ -1,76 +1,44 @@
 // chatController.js
-const Message = require('../models/MessageModel');
 const User = require('../models/UserModel');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth.json');
+const Chat = require('../models/ChatModel')
 
 class ChatController {
-
-    static async getPrivateMessages(req, res) {
-        const { user, to } = req.params;
-
-        // Adicione verificação de autenticação aqui (verifique o token)
-        const token = req.headers.authorization;
+    static async createChat(req, res) {
+        const newChat = new Chat({
+            members: [req.body.senderId, req.body.receiverId]
+        })
 
         try {
-            jwt.verify(token, authConfig.secret);
-        } catch (error) {
-            return res.status(401).json({ error: 'Token inválido' });
+            const result = await newChat.save();
+            res.status(200).json(result)
+        } catch (e) {
+            res.status(500).json(e)
         }
+    }
 
+    static async userChats(req, res) {
         try {
-            const userexists = await User.findOne({ user });
-
-            if (!userexists) {
-                return res.status(400).json({ error: 'Usuário não existe' });
-            }
-
-            const messages = await Message.find({
-                $or: [
-                    { user, to },
-                    { user: to, to: user },
-                ],
+            const result = await Chat.find({
+                members: { $in: [req.params.userId] }
             });
-            res.json(messages);
-        } catch (error) {
-            console.error('Erro ao obter mensagens privadas:', error);
-            res.status(500).send('Erro interno do servidor');
+            res.status(200).json(result)
+        } catch (e) {
+            res.status(500).json(e)
         }
     }
 
-    static async sendPrivateMessage(req, res) {
-        const { user, text, to } = req.body;
-
-        // Adicione verificação de autenticação aqui (verifique o token)
-        const token = req.headers.authorization;
-
+    static async findChat(req, res) {
         try {
-            jwt.verify(token, authConfig.secret);
+            const chat = Chat.findOne({
+                members: { $all: [req.params.firstId, req.params.secondId] }
+            })
+            res.status(200).json(chat)
         } catch (error) {
-            return res.status(401).json({ error: 'Token inválido' });
+            res.status(500).json(error)
         }
-
-        try {
-
-            const userexists = await User.findOne({ user });
-
-            if (!userexists) {
-                return res.status(400).json({ error: 'Usuário não existe' });
-            }
-
-            const newMessage = new Message({ user, text, to });
-            await newMessage.save();
-
-            res.json(newMessage);
-        } catch (error) {
-            console.error('Erro ao enviar mensagem privada:', error);
-            res.status(500).send('Erro interno do servidor');
-        }
-
     }
-
 }
 
-module.exports = {
-    ChatController
-};
+module.exports = ChatController;
