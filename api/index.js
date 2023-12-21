@@ -2,17 +2,12 @@ const express = require('express');
 const routes = require('./routes/index');
 const http = require('http');
 
-const {initializeSocket} = require('./controllers/ChatController')
-
 const app = express();
 const server = http.Server(app);
-
-initializeSocket(server);
 
 routes(app);
 
 const port = 3000;
-
 
 app.listen(port, () =>{
     console.log('listening on port', port)
