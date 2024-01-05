@@ -2,18 +2,19 @@ const mongoose = require('../database/index')
 const { Schema } = require('../database/index');
 
 const messageSchema = new mongoose.Schema({
-    chatId: {
+    senderId: {
         type: String,
         require: true
     },
-    senderId: {
+    receiverId: {
         type: String,
         require: true
     },
     text: {
         type: String,
         require: true
-    }
+    },
+    read: { type: Boolean, default: false },
 }, {
     timestamps: true
 })
