@@ -7,6 +7,7 @@ router.post('/transacao/transferir', TransacaoController.CriarTransacaoTransfere
     .get('/transacao/:userId', TransacaoController.BuscarTransacoesUsuario)
     .get('/transacao/saldo/:userId', TransacaoController.BuscarSaldo)
     .delete('/transacao/delete/all', TransacaoController.DeletarExtrato)
-    .post('/transacao/deposito', TransacaoController.CriarTransacaoDeposito)
+    .post('/transacao/intent', TransacaoController.CriarTransacaoDeposito)
+    .put('/transacao/deposito', TransacaoController.AdicionarSaldo)
 
 module.exports = router;

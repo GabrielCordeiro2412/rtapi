@@ -31,11 +31,11 @@ class ChatController {
     }
 
     static async deleteChat(req, res) {
-        const { senderId, receiverId } = req.body;
+        const { senderid, receiverid } = req.body;
 
         try {
             await Chat.deleteOne({
-                members: { $all: [senderId, receiverId] }
+                members: { $all: [senderid, receiverid] }
             });
 
             res.status(200).json({ message: 'Chat deleted successfully' });
@@ -47,8 +47,9 @@ class ChatController {
     static async userChats(req, res) {
         try {
             const result = await Chat.find({
-                members: { $in: [req.params.userId] }
-            });
+                members: { $in: [req.params.userid] }
+            }).populate('members');
+            console.log(result)
             res.status(200).json(result)
         } catch (e) {
             res.status(500).json(e)
