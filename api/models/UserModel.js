@@ -40,6 +40,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: false,
     },
+    saldo: {
+        type: Number,
+        require: true,
+        default: 0.00
+    },
     instituicao: {
         type: Schema.Types.ObjectId,
         ref: 'Instituicao',

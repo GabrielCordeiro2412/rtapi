@@ -1,187 +1,71 @@
 // chatController.js
-const socketIO = require('socket.io');
-const Message = require('../models/MessageModel');
 const User = require('../models/UserModel');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth.json');
-
-let io;
-const connectedUsers = {}; // Mapeia o socket.id para o ID do usuário
+const Chat = require('../models/ChatModel')
 
 class ChatController {
-
-    static async getPrivateMessages(req, res) {
-        const { user, to } = req.params;
-
-        // Adicione verificação de autenticação aqui (verifique o token)
-        const token = req.headers.authorization;
-
-        try {
-            jwt.verify(token, authConfig.secret);
-        } catch (error) {
-            return res.status(401).json({ error: 'Token inválido' });
-        }
+    static async createChat(req, res) {
+        //console.log(req.body.senderId, req.body.receiverId)
+        const existingChat = await Chat.findOne({
+            members: { $all: [req.body.senderId, req.body.receiverId] }
+        });
 
         try {
-            const userexists = await User.findOne({ user });
-
-            if (!userexists) {
-                return res.status(400).json({ error: 'Usuário não existe' });
+            if (existingChat) {
+                console.log("Chat já existente")
+                // Se o chat já existe, retorna um erro ou outra resposta apropriada
+                return res.status(400).json(existingChat);
             }
 
-            const messages = await Message.find({
-                $or: [
-                    { user, to },
-                    { user: to, to: user },
-                ],
+            const newChat = new Chat({
+                members: [req.body.senderId, req.body.receiverId]
+            })
+
+            const result = await newChat.save();
+            console.log("Chat criado com sucesso!")
+            res.status(200).json(result)
+        } catch (e) {
+            res.status(500).json(e)
+        }
+    }
+
+    static async deleteChat(req, res) {
+        const { senderid, receiverid } = req.body;
+
+        try {
+            await Chat.deleteOne({
+                members: { $all: [senderid, receiverid] }
             });
-            res.json(messages);
+
+            res.status(200).json({ message: 'Chat deleted successfully' });
         } catch (error) {
-            console.error('Erro ao obter mensagens privadas:', error);
-            res.status(500).send('Erro interno do servidor');
+            res.status(500).json(error)
         }
     }
 
-    static async sendPrivateMessage(req, res) {
-        const { user, text, to } = req.body;
-
-        // Adicione verificação de autenticação aqui (verifique o token)
-        const token = req.headers.authorization;
-
+    static async userChats(req, res) {
         try {
-            jwt.verify(token, authConfig.secret);
-        } catch (error) {
-            return res.status(401).json({ error: 'Token inválido' });
+            const result = await Chat.find({
+                members: { $in: [req.params.userid] }
+            }).populate('members');
+            console.log(result)
+            res.status(200).json(result)
+        } catch (e) {
+            res.status(500).json(e)
         }
+    }
 
+    static async findChat(req, res) {
         try {
-
-            const userexists = await User.findOne({ user });
-
-            if (!userexists) {
-                return res.status(400).json({ error: 'Usuário não existe' });
-            }
-
-            const newMessage = new Message({ user, text, to });
-            await newMessage.save();
-
-            // Enviar a nova mensagem para os clientes conectados
-            io.emit('newMessage', newMessage);
-
-            res.json(newMessage);
+            const chat = Chat.findOne({
+                members: { $all: [req.params.firstId, req.params.secondId] }
+            })
+            res.status(200).json(chat)
         } catch (error) {
-            console.error('Erro ao enviar mensagem privada:', error);
-            res.status(500).send('Erro interno do servidor');
-        }
-
-    }
-
-}
-
-function initializeSocket(server) {
-    io = socketIO(server);
-
-    io.on('connection', (socket) => {
-        console.log('Usuário conectado:', socket.id);
-
-        socket.on('setUser', async (userId) => {
-            try {
-                // Verifica se o usuário existe antes de associar o ID do usuário ao ID do socket
-                const user = await User.findById(userId);
-                if (!user) {
-                    throw new Error('Usuário não encontrado');
-                }
-
-                // Associa o ID do usuário ao ID do socket
-                connectedUsers[socket.id] = userId;
-                console.log(`Usuário ${userId} associado ao socket ${socket.id}`);
-
-                // Envia as mensagens existentes para o usuário recém-conectado
-                sendChatHistory(socket, userId);
-            } catch (error) {
-                console.error('Erro ao associar usuário ao socket:', error);
-                socket.disconnect();
-            }
-        });
-
-        socket.on('sendMessage', async (data) => {
-            const { to, text } = data;
-
-            try {
-                // Verifica se o usuário de destino existe
-                const recipientUser = await User.findById(to);
-                if (!recipientUser) {
-                    throw new Error('Usuário de destino não encontrado');
-                }
-
-                // Salva a mensagem no banco de dados
-                const message = new Message({
-                    from: connectedUsers[socket.id],
-                    to,
-                    text,
-                });
-                await message.save();
-
-                // Envia a mensagem para o destinatário e para o remetente
-                const recipientSocket = findSocketByUserId(to);
-                if (recipientSocket) {
-                    io.to(recipientSocket.id).emit('message', { from: connectedUsers[socket.id], text });
-                }
-                socket.emit('message', { from: connectedUsers[socket.id], text });
-            } catch (error) {
-                console.error('Erro ao enviar mensagem:', error);
-            }
-        });
-
-        socket.on('disconnect', () => {
-            console.log('Usuário desconectado:', socket.id);
-            // Remove o mapeamento quando o usuário se desconecta
-            delete connectedUsers[socket.id];
-        });
-    });
-}
-
-function sendChatHistory(socket, userId) {
-    // Recupera as últimas mensagens do banco de dados para o usuário específico
-    Message.find({
-        $or: [
-            { from: userId },
-            { to: userId },
-        ],
-    })
-        .sort({ createdAt: -1 })
-        .limit(10)
-        .exec((err, messages) => {
-            if (err) {
-                console.error('Erro ao obter o histórico de bate-papo:', err);
-                return;
-            }
-
-            // Emite as mensagens para o usuário recém-conectado
-            socket.emit('chatHistory', messages.reverse());
-        });
-}
-
-function findSocketByUserId(userId) {
-    // Encontra o socket correspondente ao ID do usuário
-    const socketIds = Object.keys(connectedUsers);
-    for (const socketId of socketIds) {
-        if (connectedUsers[socketId] === userId) {
-            return io.sockets.sockets[socketId];
+            res.status(500).json(error)
         }
     }
-    return null;
 }
 
-function getIO() {
-    if (!io) {
-        throw new Error('Socket.IO not initialized!');
-    }
-    return io;
-}
-
-module.exports = {
-    initializeSocket,
-    getIO,
-    ChatController
-};
+module.exports = ChatController;
