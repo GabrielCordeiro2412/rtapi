@@ -1,17 +1,25 @@
 const nodemailer = require('nodemailer');
 
-async function enviarEmail(destinatario, assunto, conteudo) {
-    // Configuração do transporte de email
-    const transporter = nodemailer.createTransport({
-        host: 'smtp-mail.outlook.com', // Substitua pelo host SMTP do seu provedor de email
-        port: 587, // Substitua pela porta do seu provedor de email (normalmente 587 ou 465 para SSL)
-        secure: false, // Defina como true para usar SSL (por exemplo, para Gmail)
-        auth: {
-            user: 'grodriguescordeiro@hotmail.com', // Substitua pelo seu email de envio
-            pass: 'gabriel241203', // Substitua pela sua senha de email
-        },
-    });
+// Configuração do transporte de email
+const transporter = nodemailer.createTransport({
+    host: 'smtp-mail.outlook.com', // Substitua pelo host SMTP do seu provedor de email
+    port: 587, // Substitua pela porta do seu provedor de email (normalmente 587 ou 465 para SSL)
+    secure: false, // Defina como true para usar SSL (por exemplo, para Gmail)
+    auth: {
+        user: 'grodriguescordeiro@hotmail.com', // Substitua pelo seu email de envio
+        pass: 'gabriel241203', // Substitua pela sua senha de email
+    },
+    pool: {
+        maxConnections: 10, // Número máximo de conexões simultâneas
+        maxMessages: 100, // Número máximo de mensagens por conexão
+        rateDelta: 1000, // Intervalo em milissegundos entre as conexões para controlar a taxa
+    },
+    tls: {
+        // Adicione a configuração TLS se necessário
+    },
+});
 
+async function enviarEmail(destinatario, assunto, conteudo) {
     // Definição do email
     const mailOptions = {
         from: 'grodriguescordeiro@hotmail.com', // Substitua pelo seu email de envio
@@ -22,7 +30,7 @@ async function enviarEmail(destinatario, assunto, conteudo) {
     };
 
     try {
-        // Envio do email
+        // Envio do email de forma assíncrona
         const info = await transporter.sendMail(mailOptions);
         console.log('Email enviado:', info.messageId);
         return info;
