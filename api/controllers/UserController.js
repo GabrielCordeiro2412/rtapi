@@ -6,7 +6,6 @@ const authConfig = require('../config/auth.json');
 const enviarEmail = require('../functions/sendMail')
 const stripe = require('stripe')('sk_test_51Mw9XNBzmAAATyiFwz37GfPX2Mw8yGNCNl1X6xjTTA5gqhkXtaT0IMzmc1m9N4KV3RsiOwl1TaIDKWshZC7lwHOI00wtU8SOot');
 const crypto = require('crypto');
-const Instituicao = require('../models/InstituicaoModel');
 
 
 function generateToken(params = {}) {
@@ -46,8 +45,8 @@ class UserController {
 
             // Envia o email de boas-vindas
             const destinatario = email;
-            const assunto = 'Bem-vindo ao nosso aplicativo!';
-            const conteudo = `Olá ${name},\n\nBem-vindo ao nosso aplicativo! Esperamos que você aproveite sua experiência conosco.\n\nAtenciosamente,\nEquipe do Aplicativo`;
+            const assunto = 'Boas vindas ao Schoob!';
+            const conteudo = `Olá ${name},\n\nBem-vindo ao nosso aplicativo! Seu cadastro foi confirmado e estamos aguardando a confirmação da sua instituição de ensino, você será avisado por e-mail assim que foi liberado.\n\nAtenciosamente,\nEquipe do Aplicativo`;
 
             await enviarEmail(destinatario, assunto, conteudo);
 
@@ -72,9 +71,13 @@ class UserController {
             }
 
             // Verifica se a senha fornecida coincide com a senha armazenada no banco de dados
-            const senhaCorreta = await bcrypt.compare(password, usuarioEmailExistente.password);
+            const senhaCorreta = bcrypt.compare(password, usuarioEmailExistente.password);
             if (!senhaCorreta) {
                 return res.status(401).json({ error: 'E-mail ou senha inválidos' });
+            }
+
+            if (!usuarioEmailExistente.active) {
+                return res.status(401).json({ error: 'Cadastro pendente de aprovação!' });
             }
 
             usuarioEmailExistente.password = undefined;
@@ -275,9 +278,9 @@ class UserController {
     }
 
     static async getUserByInstituicao(req, res) {
-        const {inst} = req.params;
+        const { inst } = req.params;
         try {
-            const usuarios = await User.find({instituicao: inst}).populate('instituicao turma');
+            const usuarios = await User.find({ instituicao: inst }).populate('instituicao turma');
 
             return res.status(200).json(usuarios);
         } catch (error) {

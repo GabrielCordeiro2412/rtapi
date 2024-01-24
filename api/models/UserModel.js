@@ -55,6 +55,15 @@ const userSchema = new mongoose.Schema({
         ref: 'Turma',
         require: true,
     },
+    active:{
+        type: Boolean,
+        require: true,
+        default: false
+    },
+    avatar:{
+        type: Number,
+        require: true
+    },
     passwordResetToken: {
         type: String,
         select: false

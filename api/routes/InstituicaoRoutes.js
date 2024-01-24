@@ -11,4 +11,5 @@ router
     .put('/instituicao/:instituicaoId', InstituicaoController.atualizarInstituicao)
     .put('/instituicao/:instituicaoId/upgrade-plano/:planoId', InstituicaoController.atualizarPlano)
     .get('/instituicao/bycod', InstituicaoController.getInstByCodigo)
+    .get('/instituicao/aprovar', InstituicaoController.aprovarUsuario)
 module.exports = router
