@@ -6,7 +6,9 @@ const authConfig = require('../config/auth.json');
 const enviarEmail = require('../functions/sendMail')
 const stripe = require('stripe')('sk_test_51Mw9XNBzmAAATyiFwz37GfPX2Mw8yGNCNl1X6xjTTA5gqhkXtaT0IMzmc1m9N4KV3RsiOwl1TaIDKWshZC7lwHOI00wtU8SOot');
 const crypto = require('crypto');
+const {Resend} = require('resend')
 
+const resend = new Resend('re_9MfiVcQu_Hd4VrsDW8SVMTm1oda19gH4v');
 
 function generateToken(params = {}) {
     return jwt.sign(params, authConfig.secret, {
@@ -42,6 +44,17 @@ class UserController {
                 instituicao: instituicaoid,
                 turma: turmaid,
             });
+
+            // const { data, error } = await resend.emails.send({
+            //     from: 'onboarding@resend.dev',
+            //     to: [email],
+            //     subject: 'Boas vindas ao Schoob!',
+            //     html: `Olá ${name},\n\nBem-vindo ao nosso aplicativo! Seu cadastro foi confirmado e estamos aguardando a confirmação da sua instituição de ensino, você será avisado por e-mail assim que foi liberado.\n\nAtenciosamente,\nEquipe do Aplicativo`,
+            //   });
+            
+            //   if (error) {
+            //     return console.error({ error });
+            //   }
 
             // Envia o email de boas-vindas
             const destinatario = email;

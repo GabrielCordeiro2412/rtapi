@@ -12,6 +12,9 @@ const feedback = require('../routes/FeedbackRoutes')
 const chat = require('../routes/ChatRoutes')
 const message = require('../routes/MessageRoutes')
 const transacao = require('../routes/TransacaoRoutes')
+const local = require('../routes/LocalRoutes')
+const categoria = require('../routes/CategoriaRoutes')
+const categorialocal = require('../routes/CategoriaLocalRoutes')
 
 module.exports = app => {
     app.use(bodyParser.json(),
@@ -28,6 +31,9 @@ module.exports = app => {
     feedback,
     chat,
     message,
-    transacao
+    transacao,
+    local,
+    categoria,
+    categorialocal
     );
 }
