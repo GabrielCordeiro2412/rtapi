@@ -15,8 +15,8 @@ class CategoriaLocalController {
             const local = await Local.findById(localid)
             if (!categoria) {
                 return res.status(400).send({ message: "Categoria não existe!" })
-            }else if(!local){
-                return res.status(400).send({ message: "Local não existe" })   
+            } else if (!local) {
+                return res.status(400).send({ message: "Local não existe" })
             }
             const catlocal = await CategoriaLocal.create({
                 categoria: categoriaid,
@@ -34,7 +34,7 @@ class CategoriaLocalController {
         const { catlocalid } = req.headers;
 
         try {
-            await CategoriaLocal.findByIdAndDelete(catlocalid)
+            await CategoriaLocal.findByIdAndDelete(catlocalid);
 
             res.status(200).json({ message: 'Categoria do Local deletada com sucesso!' });
         } catch (error) {
@@ -43,8 +43,20 @@ class CategoriaLocalController {
     }
     static async todasCategoriasLocal(req, res) {
         try {
-            const catlocais = CategoriaLocal.find()
+            const catlocais = await CategoriaLocal.find()
+            console.log(catlocais)
             res.status(200).json(catlocais)
+        } catch (error) {
+            res.status(500).json(error)
+        }
+    }
+
+    static async categoriasLocal(req, res) {
+        const { localid } = req.params;
+
+        try {
+            const categorias = await CategoriaLocal.find({ local: localid }).populate('categoria local')
+            return res.status(200).json(categorias)
         } catch (error) {
             res.status(500).json(error)
         }

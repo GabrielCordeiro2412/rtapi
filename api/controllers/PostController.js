@@ -8,7 +8,7 @@ class PostController{
 
     static async criarPost(req, res) {
         const { text, user, instituicao, turma } = req.body;
-
+        console.log(req.body)
         try {
 
             const userFind = await User.findById(user);
@@ -23,7 +23,7 @@ class PostController{
                 return res.status(404).json({ error: 'Instituição não encontrada' });
             }
 
-            const novoPost = await Post.create({ text, userFind, instituicao, turma });
+            const novoPost = await Post.create({ text, userFind, user, instituicao, turma });
 
             return res.status(201).json(novoPost);
         } catch (error) {
@@ -34,6 +34,17 @@ class PostController{
     static async listarTodosPosts(req, res) {
         try {
             const posts = await Post.find();
+
+            return res.status(200).json(posts);
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao listar os posts' });
+        }
+    }
+
+    static async listarTodosPostsPorInst(req, res) {
+        const {instid} = req.params;
+        try {
+            const posts = await Post.find({instituicao: instid}).populate('user turma instituicao');
 
             return res.status(200).json(posts);
         } catch (error) {
