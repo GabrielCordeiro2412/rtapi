@@ -10,5 +10,6 @@ router.post('/message', MessageController.addMessage)
     .put('/messages/:receiver', MessageController.markMessagesAsRead)
     .get('/messages/all', MessageController.allMessages)
     .delete('/messages/delete/all', MessageController.deleteAllMessages)
+    .get('/chat/users/:userid', MessageController.getChatUsers);
 
 module.exports = router;

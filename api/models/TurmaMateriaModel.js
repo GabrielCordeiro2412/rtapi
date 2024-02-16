@@ -18,6 +18,10 @@ const turmaMateriaSchema = new mongoose.Schema({
         min: 0,
         max: 6,
     },
+    horario:{
+        type: String,
+        require: true,
+    },
     createAt: {
         type: Date,
         default: Date.now
