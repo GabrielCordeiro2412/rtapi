@@ -17,7 +17,7 @@ class UserController {
 
     // Cria um novo usuário
     static async criarUsuario(req, res) {
-        const { name, email, password, userCpf, parentsControl, passwordParents } = req.body;
+        const { name, email, password, userCpf, parentsControl, passwordParents, pushToken } = req.body;
         const { instituicaoid, turmaid } = req.headers;
 
         try {
@@ -40,18 +40,8 @@ class UserController {
                 passwordParents,
                 instituicao: instituicaoid,
                 turma: turmaid,
+                pushToken: pushToken ? pushToken : ""
             });
-
-            // const { data, error } = await resend.emails.send({
-            //     from: 'onboarding@resend.dev',
-            //     to: [email],
-            //     subject: 'Boas vindas ao Schoob!',
-            //     html: `Olá ${name},\n\nBem-vindo ao nosso aplicativo! Seu cadastro foi confirmado e estamos aguardando a confirmação da sua instituição de ensino, você será avisado por e-mail assim que foi liberado.\n\nAtenciosamente,\nEquipe do Aplicativo`,
-            //   });
-
-            //   if (error) {
-            //     return console.error({ error });
-            //   }
 
             // Envia o email de boas-vindas
             const destinatario = email;
@@ -130,7 +120,7 @@ class UserController {
     // Atualiza um usuário pelo ID
     static async atualizarUsuario(req, res) {
         const { usuarioId } = req.params;
-        const { name, email, cpf, dtNascimento, parentsControl, passwordParents, avatar } = req.body;
+        const { name, email, cpf, dtNascimento, parentsControl, passwordParents, avatar, pushToken } = req.body;
         const { instituicaoid, turmaid } = req.headers;
         //caso o usuário passe um atributo com o nome diferente n está exibindo mensgem de erro: "nome"
 
@@ -160,6 +150,7 @@ class UserController {
             if (instituicaoid) updates.instituicao = instituicaoid;
             if (turmaid) updates.turma = turmaid;
             if (avatar) updates.avatar = avatar;
+            if (pushToken) updates.pushToken = pushToken;
 
             const usuarioAtualizado = await User.findByIdAndUpdate(usuarioId, { $set: updates }, { new: true }).populate('instituicao turma');
 

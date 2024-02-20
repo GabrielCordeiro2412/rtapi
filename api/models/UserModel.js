@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    apelido:{
+        type: String,
+        require: true,
+    },
     cpf: {
         type: String,
         unique: true,
@@ -71,6 +75,10 @@ const userSchema = new mongoose.Schema({
     passwordResetExpires: {
         type: Date,
         select: false
+    },
+    pushToken: {
+        type: String,
+        default: null,
     },
     createAt: {
         type: Date,

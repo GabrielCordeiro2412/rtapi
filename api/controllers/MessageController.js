@@ -44,8 +44,18 @@ class MessageController {
     }
 
     static async markMessagesAsRead(req, res) {
-        const { receiverId } = req.params;
-        await Message.updateMany({ receiverId, read: false }, { read: true });
+        const { receiverid, senderid } = req.headers;
+        try {
+            const results = await Message.find({senderId: senderid, receiverId: receiverid, read: false})
+            if(results){
+                await Message.updateMany({ senderId: senderid, receiverId: receiverid, read: false }, { read: true });
+
+                res.status(200).json("Lido");
+            }
+        } catch (error) {
+            console.log(error)
+        }
+
     }
 
     static async uniqueChatPartners(req, res) {
@@ -91,7 +101,7 @@ class MessageController {
             const allUniqueUsers = [...new Set([...uniqueSenders, ...uniqueReceivers])];
 
             // Busque os detalhes completos dos usuários
-            const chatUsers = await User.find({ _id: { $in: allUniqueUsers } }).sort({name: 1});
+            const chatUsers = await User.find({ _id: { $in: allUniqueUsers } }).populate("turma instituicao").sort({ name: 1 });
 
             // Crie um objeto para armazenar as últimas mensagens
             const lastMessages = {};
@@ -103,7 +113,8 @@ class MessageController {
                         { senderId: userid, receiverId: user._id },
                         { senderId: user._id, receiverId: userid },
                     ],
-                }).sort({ createdAt: -1 }); // Alterado para `createdAt` para corresponder ao nome do campo no modelo
+                })
+                .sort({ createdAt: -1 }); // Alterado para `createdAt` para corresponder ao nome do campo no modelo
 
                 lastMessages[user._id] = lastMessage;
             }
@@ -117,6 +128,17 @@ class MessageController {
             res.status(200).json(usersWithLastMessages);
         } catch (error) {
             res.status(500).json(error);
+        }
+    }
+
+    static async deleteMessage(req, res){
+        const {messageid} = req.params;
+        try {
+            await Message.findByIdAndDelete(messageid);
+
+            res.status(200).json({ message: 'Mensagem deletada com sucesso!' });
+        } catch (error) {
+            res.status(500).json({ message: 'Erro ao deletar mensagem!' })
         }
     }
 }

@@ -8,6 +8,7 @@ router.post('/feedbacks/criar', FeedbackController.criarFeedback)
     .get('/feedbacks', FeedbackController.listarTodosFeedbacks)
     .put('/feedbacks/:feedbackId', FeedbackController.atualizarFeedback)
     .delete('/feedbacks/:feedbackId', FeedbackController.deletarFeedback)
+    .delete('/feedbacks/delete/all', FeedbackController.deleteAllFeedbacks)
     .get('/feedbacks/verifica', FeedbackController.verificaFeedback)
 
 module.exports = router;
