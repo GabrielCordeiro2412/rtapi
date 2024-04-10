@@ -11,6 +11,11 @@ const perguntaSchema = new mongoose.Schema({
         ref: 'Instituicao',
         require: true,
     },
+    materia: {
+        type: Schema.Types.ObjectId,
+        ref: 'Materia',
+        require: false,
+    },
     createAt: {
         type: Date,
         default: Date.now,

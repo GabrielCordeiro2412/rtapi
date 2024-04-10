@@ -195,6 +195,23 @@ class TurmaMateriaController {
             return res.status(500).json({ error: 'Erro ao buscar TurmaMateria por turma' });
         }
     }
+
+    static async listarMateriasPorTurma(req, res) {
+        const { turmaid } = req.params;
+
+        try {
+            // Busca todas as TurmaMateria relacionadas à turma
+            const turmaMaterias = await TurmaMateria.find({ turma: turmaid }).populate('materia');
+
+            // Extrai as matérias únicas da lista de TurmaMaterias
+            const materiasUnicas = Array.from(new Set(turmaMaterias.map(turmaMateria => turmaMateria.materia)));
+
+            return res.status(200).json(materiasUnicas);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Erro ao buscar matérias por turma' });
+        }
+    }
 }
 
 module.exports = TurmaMateriaController;

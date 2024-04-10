@@ -133,6 +133,30 @@ class UserRewardsController {
             return res.status(500).json({ error: 'Erro ao obter o UserReward' });
         }
     }
+
+    static async obterUserRewardsPorUsuario(req, res) {
+        const { userid } = req.params;
+
+        try {
+            const user = await User.findById(userid);
+
+            if(!user){
+                return res.status(404).json({ error: 'Usuário não econtrado' });
+            }
+
+            // Busca o registro de UserRewards pelo usuario
+            const userReward = await UserRewards.find({ user: userid }).populate('user rewards');
+
+            if (!userReward) {
+                return res.status(404).json({ error: 'UserReward não encontrado'});
+            }
+
+            return res.status(200).json(userReward);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Erro ao obter o UserReward' });
+        }
+    }
 }
 
 module.exports = UserRewardsController;

@@ -17,6 +17,8 @@ const categoria = require('../routes/CategoriaRoutes')
 const categorialocal = require('../routes/CategoriaLocalRoutes')
 const avatar = require('../routes/AvatarRoutes')
 const post = require('../routes/PostRoutes')
+const anotacao = require('../routes/AnotacaoRoutes')
+const tarefa = require('../routes/TarefaRoutes')
 
 module.exports = app => {
     app.use(bodyParser.json(),
@@ -38,6 +40,8 @@ module.exports = app => {
     categoria,
     categorialocal,
     avatar,
-    post
+    post,
+    anotacao,
+    tarefa
     );
 }

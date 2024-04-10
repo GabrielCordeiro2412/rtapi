@@ -120,7 +120,7 @@ class UserController {
     // Atualiza um usuário pelo ID
     static async atualizarUsuario(req, res) {
         const { usuarioId } = req.params;
-        const { name, email, cpf, dtNascimento, parentsControl, passwordParents, avatar, pushToken } = req.body;
+        const { name, email, cpf, dtNascimento, parentsControl, passwordParents, avatar, pushToken, apelido } = req.body;
         const { instituicaoid, turmaid } = req.headers;
         //caso o usuário passe um atributo com o nome diferente n está exibindo mensgem de erro: "nome"
 
@@ -151,6 +151,7 @@ class UserController {
             if (turmaid) updates.turma = turmaid;
             if (avatar) updates.avatar = avatar;
             if (pushToken) updates.pushToken = pushToken;
+            if (apelido) updates.apelido = apelido;
 
             const usuarioAtualizado = await User.findByIdAndUpdate(usuarioId, { $set: updates }, { new: true }).populate('instituicao turma');
 

@@ -11,5 +11,6 @@ router.post('/turmamateria/criar', TurmaMateriaController.criarTurmaMateria)
     .get('/turmamateria/turma/:turmaId', TurmaMateriaController.buscarTurmaMateriaPorTurma)
     .get('/turmamateria/verifica/:turmaId', TurmaMateriaController.buscarTurmaMateriaPorTurmaFeedback)
     .get('/turmamateria/:turmaId/:dia', TurmaMateriaController.buscarTurmaMateriaPorDiaSemanaTurma)
+    .get('/turmamateria/materia/turma/:turmaid', TurmaMateriaController.listarMateriasPorTurma)
 
 module.exports = router;
