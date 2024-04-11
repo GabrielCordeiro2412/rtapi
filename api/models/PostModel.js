@@ -1,4 +1,6 @@
 const mongoose = require('../database/index')
+const { Schema } = require('../database/index');
+
 
 const postSchema = new mongoose.Schema({
     text:{
@@ -19,6 +21,14 @@ const postSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Turma',
         require: false,
+    },
+    img_url:{
+        type: String,
+        required: false
+    },
+    img_name:{
+        type: String,
+        required: false
     },
     createAt: {
         type: Date,

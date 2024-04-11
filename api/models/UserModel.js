@@ -16,6 +16,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
+    apelido:{
+        type: String,
+        require: true,
+    },
     cpf: {
         type: String,
         unique: true,
@@ -62,7 +66,7 @@ const userSchema = new mongoose.Schema({
     },
     avatar:{
         type: Number,
-        require: true
+        require: true,
     },
     passwordResetToken: {
         type: String,
@@ -72,6 +76,10 @@ const userSchema = new mongoose.Schema({
         type: Date,
         select: false
     },
+    pushToken: {
+        type: String,
+        default: null,
+    },
     createAt: {
         type: Date,
         default: Date.now
@@ -79,7 +87,7 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.pre('save', async function (next) {
-    const hash = await bcrypt.hash(this.password, 10);
+    const hash = bcrypt.hash(this.password, 10);
     this.password = hash;
 
     next(); this;

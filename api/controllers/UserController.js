@@ -6,19 +6,18 @@ const authConfig = require('../config/auth.json');
 const enviarEmail = require('../functions/sendMail')
 const stripe = require('stripe')('sk_test_51Mw9XNBzmAAATyiFwz37GfPX2Mw8yGNCNl1X6xjTTA5gqhkXtaT0IMzmc1m9N4KV3RsiOwl1TaIDKWshZC7lwHOI00wtU8SOot');
 const crypto = require('crypto');
+const { Resend } = require('resend')
 
+const resend = new Resend('re_9MfiVcQu_Hd4VrsDW8SVMTm1oda19gH4v');
 
 function generateToken(params = {}) {
-    return jwt.sign(params, authConfig.secret, {
-        expiresIn: 86400,
-    })
-
+    return jwt.sign(params, authConfig.secret)
 }
 class UserController {
 
     // Cria um novo usuário
     static async criarUsuario(req, res) {
-        const { name, email, password, userCpf, parentsControl, passwordParents } = req.body;
+        const { name, email, password, userCpf, parentsControl, passwordParents, pushToken } = req.body;
         const { instituicaoid, turmaid } = req.headers;
 
         try {
@@ -41,6 +40,7 @@ class UserController {
                 passwordParents,
                 instituicao: instituicaoid,
                 turma: turmaid,
+                pushToken: pushToken ? pushToken : ""
             });
 
             // Envia o email de boas-vindas
@@ -111,7 +111,7 @@ class UserController {
                 return res.status(404).json({ error: 'Usuário não encontrado' });
             }
 
-            return res.status(200).json(usuario);
+            return res.status(200).json({ usuario: usuario, token: generateToken({ id: usuario.id }) });
         } catch (error) {
             return res.status(500).json({ error: 'Erro ao obter o usuário' });
         }
@@ -120,7 +120,7 @@ class UserController {
     // Atualiza um usuário pelo ID
     static async atualizarUsuario(req, res) {
         const { usuarioId } = req.params;
-        const { name, email, cpf, dtNascimento, parentsControl, passwordParents } = req.body;
+        const { name, email, cpf, dtNascimento, parentsControl, passwordParents, avatar, pushToken, apelido } = req.body;
         const { instituicaoid, turmaid } = req.headers;
         //caso o usuário passe um atributo com o nome diferente n está exibindo mensgem de erro: "nome"
 
@@ -149,6 +149,9 @@ class UserController {
             if (passwordParents) updates.passwordParents = passwordParents;
             if (instituicaoid) updates.instituicao = instituicaoid;
             if (turmaid) updates.turma = turmaid;
+            if (avatar) updates.avatar = avatar;
+            if (pushToken) updates.pushToken = pushToken;
+            if (apelido) updates.apelido = apelido;
 
             const usuarioAtualizado = await User.findByIdAndUpdate(usuarioId, { $set: updates }, { new: true }).populate('instituicao turma');
 
@@ -288,6 +291,7 @@ class UserController {
             //console.log(error)
         }
     }
+
 }
 
 module.exports = UserController;

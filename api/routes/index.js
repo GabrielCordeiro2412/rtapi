@@ -12,6 +12,13 @@ const feedback = require('../routes/FeedbackRoutes')
 const chat = require('../routes/ChatRoutes')
 const message = require('../routes/MessageRoutes')
 const transacao = require('../routes/TransacaoRoutes')
+const local = require('../routes/LocalRoutes')
+const categoria = require('../routes/CategoriaRoutes')
+const categorialocal = require('../routes/CategoriaLocalRoutes')
+const avatar = require('../routes/AvatarRoutes')
+const post = require('../routes/PostRoutes')
+const anotacao = require('../routes/AnotacaoRoutes')
+const tarefa = require('../routes/TarefaRoutes')
 
 module.exports = app => {
     app.use(bodyParser.json(),
@@ -28,6 +35,13 @@ module.exports = app => {
     feedback,
     chat,
     message,
-    transacao
+    transacao,
+    local,
+    categoria,
+    categorialocal,
+    avatar,
+    post,
+    anotacao,
+    tarefa
     );
 }

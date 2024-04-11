@@ -8,7 +8,7 @@ class TurmaMateriaController {
     // Cria uma nova relação entre turma e matéria
     static async criarTurmaMateria(req, res) {
         const { turmaid, materiaid } = req.headers;
-        const { diaSemana } = req.body;
+        const { diaSemana, horario } = req.body;
 
         try {
             const turma = await Turma.findById(turmaid);
@@ -21,7 +21,8 @@ class TurmaMateriaController {
             const novaTurmaMateria = await TurmaMateria.create({
                 turma: turmaid,
                 materia: materiaid,
-                diaSemana
+                diaSemana,
+                horario
             });
 
             return res.status(201).json(novaTurmaMateria);
@@ -63,6 +64,7 @@ class TurmaMateriaController {
     static async atualizarTurmaMateria(req, res) {
         const { turmaMateriaId } = req.params;
         const { turmaid, materiaid } = req.headers;
+        const { diaSemana, horario } = req.body;
 
         try {
             const turmaMateria = await TurmaMateria.findById(turmaMateriaId);
@@ -74,6 +76,8 @@ class TurmaMateriaController {
             const updates = {};
             if (turmaid) updates.turma = turmaid;
             if (materiaid) updates.materia = materiaid;
+            if (diaSemana) updates.diaSemana = diaSemana;
+            if (horario) updates.horario = horario;
 
             const turmaMateriaAtualizada = await TurmaMateria.findByIdAndUpdate(turmaMateriaId, { $set: updates }, { new: true }).populate('turma materia');
 
@@ -126,7 +130,25 @@ class TurmaMateriaController {
 
         try {
             // Busca todas as TurmaMateria relacionadas à turma
-            const turmaMateria = await TurmaMateria.find({ turma: turmaId }).populate('turma materia');
+            const turmaMateria = await TurmaMateria.find({ turma: turmaId })
+            .sort({horario: 1})
+            .populate('turma materia');
+
+            return res.status(200).json(turmaMateria);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Erro ao buscar TurmaMateria por turma' });
+        }
+    }
+
+    static async buscarTurmaMateriaPorDiaSemanaTurma(req, res) {
+        const { turmaId, dia} = req.params;
+
+        try {
+            // Busca todas as TurmaMateria relacionadas à turma
+            const turmaMateria = await TurmaMateria.find({ turma: turmaId, diaSemana: dia })
+            .sort({horario: 1})
+            .populate('turma materia');
 
             return res.status(200).json(turmaMateria);
         } catch (error) {
@@ -141,7 +163,9 @@ class TurmaMateriaController {
 
         try {
             // Busca todas as TurmaMateria relacionadas à turma
-            const turmasMaterias = await TurmaMateria.find({ turma: turmaId }).populate('turma materia');
+            const turmasMaterias = await TurmaMateria.find({ turma: turmaId })
+            .sort({horario: 1})
+            .populate('turma materia');
 
             // Verifica se existe um feedback do aluno para cada TurmaMateria no dia atual
             const dataAtual = new Date();
@@ -169,6 +193,23 @@ class TurmaMateriaController {
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Erro ao buscar TurmaMateria por turma' });
+        }
+    }
+
+    static async listarMateriasPorTurma(req, res) {
+        const { turmaid } = req.params;
+
+        try {
+            // Busca todas as TurmaMateria relacionadas à turma
+            const turmaMaterias = await TurmaMateria.find({ turma: turmaid }).populate('materia');
+
+            // Extrai as matérias únicas da lista de TurmaMaterias
+            const materiasUnicas = Array.from(new Set(turmaMaterias.map(turmaMateria => turmaMateria.materia)));
+
+            return res.status(200).json(materiasUnicas);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ error: 'Erro ao buscar matérias por turma' });
         }
     }
 }

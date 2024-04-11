@@ -177,46 +177,47 @@ class InstituicaoController {
     }
 
     static async aprovarUsuario(req, res) {
-        const { userid, aprovado } = req.headers;
-        console.log(aprovado)
+        const { userid } = req.headers;
+        const {aprovado} = req.body;
+    
         try {
-            const user = await User.findById(userid)
-            if (aprovado && aprovado === true) {
-                
-                if (user) {
-                    if(user.active === true)
-                    {
-                        return res.status(401).json({ error: "Usuário já aprovado"})
-                    }
-                    user.active = true;
-                    user.save();
-
-                    const destinatario = user.email;
-                    const assunto = 'Schoob - Cadastro aprovado!';
-                    const conteudo = `Parabéns, ${user.name}! Seu cadastro foi aprovado pela sua instituição de ensino. \nAgora você pode usufruir de nossos serviços!\n\nAtenciosamente,\nEquipe Schoob.`;
-
-                    await enviarEmail(destinatario, assunto, conteudo);
-
-                    return res.status(200).json(user)
+            const user = await User.findById(userid);
+    
+            if (!user) {
+                return res.status(404).json({ error: "Usuário não encontrado" });
+            }
+    
+            if (aprovado) {
+                if (user.active) {
+                    return res.status(401).json({ error: "Usuário já aprovado" });
                 }
-            } else{
-                if (user) {
-                    console.log('Aqui')
-                    const destinatario = user.email;
-                    const assunto = 'Schoob - Conta não aprovada!';
-                    const conteudo = `Poxa, ${user.name}, infelizmente sua instituição de ensino reprovou seu cadastro! Tente novamente ou outre em contato com a sua instituição para ser o motivo da reprovação!\n\nAtenciosamente,\nEquipe Schoob.`;
-
-                    await enviarEmail(destinatario, assunto, conteudo);
-
-                    await User.findByIdAndDelete(userid)
-
-                    return res.status(200).send({message: "Usuário deletado!"})
-                }
+    
+                await User.updateOne({ _id: userid }, { $set: { active: true } });
+    
+                const destinatario = user.email;
+                const assunto = 'Schoob - Cadastro aprovado!';
+                const conteudo = `Parabéns, ${user.name}! Seu cadastro foi aprovado pela sua instituição de ensino. \nAgora você pode usufruir de nossos serviços!\n\nAtenciosamente,\nEquipe Schoob.`;
+    
+                await enviarEmail(destinatario, assunto, conteudo);
+    
+                return res.status(200).send({message: "Cadastro liberado!"});
+            } else {
+                const destinatario = user.email;
+                const assunto = 'Schoob - Conta não aprovada!';
+                const conteudo = `Poxa, ${user.name}, infelizmente sua instituição de ensino reprovou seu cadastro! Tente novamente ou entre em contato com a sua instituição para saber o motivo da reprovação!\n\nAtenciosamente,\nEquipe Schoob.`;
+    
+                await enviarEmail(destinatario, assunto, conteudo);
+    
+                await User.findByIdAndDelete(userid);
+    
+                return res.status(200).send({ message: "Usuário deletado!" });
             }
         } catch (error) {
+            console.error('Erro ao aprovar o cadastro:', error);
             return res.status(500).json({ error: 'Não foi possível aprovar o cadastro' });
         }
     }
+    
 }
 
 module.exports = InstituicaoController

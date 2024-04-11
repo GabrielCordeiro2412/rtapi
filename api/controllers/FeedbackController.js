@@ -145,6 +145,16 @@ class FeedbackController {
             return res.status(500).json({ error: 'Erro ao validar o feedback' });
         }
     }
+
+    static async deleteAllFeedbacks(req, res){
+        try {
+            await Feedback.deleteMany({})
+            res.status(200).send({message: 'Feedbacks deletados com sucesso!'})
+        } catch (error) {
+            return res.status(500).json({ error: 'Erro ao excluir feedback' });
+
+        }
+    }
 }
 
 module.exports = FeedbackController;
