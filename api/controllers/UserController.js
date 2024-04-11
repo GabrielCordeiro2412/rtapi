@@ -6,9 +6,6 @@ const authConfig = require('../config/auth.json');
 const enviarEmail = require('../functions/sendMail')
 const stripe = require('stripe')('sk_test_51Mw9XNBzmAAATyiFwz37GfPX2Mw8yGNCNl1X6xjTTA5gqhkXtaT0IMzmc1m9N4KV3RsiOwl1TaIDKWshZC7lwHOI00wtU8SOot');
 const crypto = require('crypto');
-const { Resend } = require('resend')
-
-const resend = new Resend('re_9MfiVcQu_Hd4VrsDW8SVMTm1oda19gH4v');
 
 function generateToken(params = {}) {
     return jwt.sign(params, authConfig.secret)
