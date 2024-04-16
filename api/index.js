@@ -6,7 +6,7 @@ require("dotenv").config();
 const morgan = require("morgan");
 const path = require("path");
 const bodyParser = require('body-parser');
-//const passport = require('./middlewares/passport'); // Caminho do arquivo passport.js
+require('./cronjobs/index')
 
 const app = express();
 const server = http.Server(app);
@@ -26,9 +26,8 @@ app.use(express.json());
 routes(app);
 
 const port = 3000;
+const host = '0.0.0.0'
 
-app.listen(port, () => {
-    console.log('listening on port', port)
-})
+app.listen(port,host)
 
 module.exports = app;

@@ -6,6 +6,10 @@ const LicenseSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Instituicao'
     },
+    plano: {
+        type: Schema.Types.ObjectId,
+        ref: 'Plano'
+    },
     licenseKey: { 
         type: String,
         unique: true,
@@ -13,9 +17,8 @@ const LicenseSchema = new mongoose.Schema({
     },
     expirationDate: { 
         type: Date,
-        select: false
     },
-    status: { 
+    active: { 
         type: Boolean, 
         default: false
     }

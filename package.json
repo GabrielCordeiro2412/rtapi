@@ -5,13 +5,13 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon ./api/index.js"
+    "start": "nodemon ./api/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^3.0.3"
+    "nodemon": "^3.1.0"
   },
   "dependencies": {
     "aws-sdk": "^2.1550.0",
@@ -29,6 +29,7 @@
     "mongoose": "^7.4.1",
     "morgan": "^1.10.0",
     "multer-s3": "^3.0.1",
+    "node-cron": "^3.0.3",
     "nodemailer": "^6.9.4",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",

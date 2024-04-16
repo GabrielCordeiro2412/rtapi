@@ -1,18 +1,19 @@
 const { Router } = require('express');
 const UserController = require('../controllers/UserController');
+const jwtMiddleware = require('../middlewares/auth')
 
 const router = Router();
 
 router.post('/usuario', UserController.criarUsuario)
-    .get('/usuario', UserController.listarTodosUsuarios)
-    .get('/usuario/:usuarioId', UserController.obterUsuarioPorId)
-    .put('/usuario/:usuarioId', UserController.atualizarUsuario)
-    .delete('/usuario/:usuarioId', UserController.deletarUsuario)
     .post('/login', UserController.login)
-    .get('/usuario/pontos/:userId', UserController.getPontosUsuario)
     .post('/usuario/forgotpassword', UserController.forgotPassword)
     .post('/usuario/resetpassword', UserController.resetPassword)
     .post('/usuario/validateCode', UserController.validatePassCode)
-    .get('/usuario/inst/:inst', UserController.getUserByInstituicao)
+    .get('/usuario', jwtMiddleware, UserController.listarTodosUsuarios)
+    .get('/usuario/:usuarioId', jwtMiddleware, UserController.obterUsuarioPorId)
+    .put('/usuario/:usuarioId', jwtMiddleware, UserController.atualizarUsuario)
+    .delete('/usuario/:usuarioId', jwtMiddleware, UserController.deletarUsuario)
+    .get('/usuario/pontos/:userId', jwtMiddleware, UserController.getPontosUsuario)
+    .get('/usuario/inst/:inst', jwtMiddleware, UserController.getUserByInstituicao)
 
 module.exports = router;

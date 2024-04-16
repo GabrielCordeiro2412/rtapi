@@ -4,6 +4,7 @@ const { cnpj } = require('cpf-cnpj-validator');
 const User = require('../models/UserModel');
 const stripe = require('stripe')(process.env.SECRET_STRIPE_CODE);
 const enviarEmail = require('../functions/sendMail')
+const {generateLicense} = require('../utils/licenseUtils')
 
 class InstituicaoController {
 
@@ -29,7 +30,7 @@ class InstituicaoController {
     }
 
     static async criarInstituicao(req, res) {
-        const { nome, endereco, sigla, email, instCnpj } = req.body
+        const { nome, endereco, sigla, email, instCnpj, password } = req.body
         const { idplano } = req.headers;
         try {
 
@@ -41,8 +42,6 @@ class InstituicaoController {
                 return res.status(404).json({ Mensagem: "Plano não Encontrado" })
             }
 
-            console.log(plano)
-
             if (!cnpj.isValid(cnpjFormatted)) {
                 return res.status(400).json({ error: 'CNPJ inválido' });
             }
@@ -51,21 +50,23 @@ class InstituicaoController {
                 nome,
                 endereco,
                 email,
+                password,
                 sigla,
                 cnpj: instCnpj,
                 plano: idplano,
             })
+            console.log(inst._id)
 
-            return res.status(200).json({
-                inst,
-            })
+            const license = await generateLicense(inst._id, idplano)
+            console.log(license)
+
+            return res.status(200).json(inst)
         } catch (error) {
             return res.json(error)
         }
     }
 
     static async todasInsituicoes(req, res) {
-        console.log(req.body)
         try {
             const inst = await Instituicao.find()
             return res.status(200).json(inst)
@@ -75,14 +76,14 @@ class InstituicaoController {
     }
 
     static async removerInstituicao(req, res) {
-        const { id } = req.params;
+        const { instid } = req.headers;
         try {
-            const inst = await Instituicao.findById(id)
+            const inst = await Instituicao.findById(instid)
 
             if (!inst)
                 return res.status(404).json({ Mensagem: "Não Encontrado" })
 
-            await Instituicao.findByIdAndDelete({ _id: id })
+            await Instituicao.findByIdAndDelete({ _id: instid })
             return res.json("Instituição deleteda com sucesso!")
         } catch (error) {
             return res.json(error)
@@ -90,27 +91,27 @@ class InstituicaoController {
     }
 
     static async exibirInstituicao(req, res) {
-        const { instituicaoId } = req.params;
+        const { instid } = req.headers;
 
         try {
-            const instituicao = await Instituicao.findById(instituicaoId).populate('plano');
+            const inst = await Instituicao.findById(instid).populate('plano');
 
-            if (!instituicao) {
+            if (!inst) {
                 return res.status(404).json({ error: 'Instituição não encontrada' });
             }
 
-            return res.status(200).json(instituicao);
+            return res.status(200).json(inst);
         } catch (error) {
             return res.json(error);
         }
     }
 
     static async atualizarInstituicao(req, res) {
-        const { instituicaoId } = req.params;
+        const { instid } = req.headers;
         const { nome, endereco, sigla, email } = req.body;
 
         try {
-            const instituicao = await Instituicao.findById(instituicaoId);
+            const instituicao = await Instituicao.findById(instid);
             if (!instituicao) {
                 return res.status(404).json({ error: 'Instituição não encontrada' });
             }
@@ -137,10 +138,10 @@ class InstituicaoController {
     }
 
     static async atualizarPlano(req, res) {
-        const { instituicaoId, planoId } = req.params;
+        const { instid, planoId } = req.headers;
 
         try {
-            const instituicao = await Instituicao.findById(instituicaoId);
+            const instituicao = await Instituicao.findById(instid);
             if (!instituicao) {
                 return res.status(404).json({ error: 'Instituição não encontrada' });
             }
@@ -161,10 +162,10 @@ class InstituicaoController {
     }
 
     static async getInstByCodigo(req, res) {
-        const { codigo } = req.headers;
+        const { instid } = req.headers;
 
         try {
-            const instituicao = await Instituicao.findOne({ codigo });
+            const instituicao = await Instituicao.findOne({ instid });
 
             if (!instituicao) {
                 return res.status(404).json({ error: 'Instituição não encontrada' });

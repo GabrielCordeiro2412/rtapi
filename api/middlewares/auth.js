@@ -1,27 +1,31 @@
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth.json');
 
-module.exports = (req, res, next) => {
+module.exports = async (req, res, next) => {
     const authHeader = req.headers.authorization;
 
-    if(!authHeader)
-        return res.status(401).send({ error: 'No Token provided'});
+    try {
+        if (!authHeader)
+            throw new Error('No token provided');
 
-    const parts = authHeader.split(' ');
+        const parts = authHeader.split(' ');
 
-    if(!parts.length === 2)
-    return res.status(401).send({error: 'Token error'});
+        if (!parts.length === 2)
+            throw new Error('Token error');
 
-    const [ scheme, token ] = parts;
+        const [scheme, token] = parts;
 
-    if(!/^Bearer$/i.test(scheme))
-    return res.status(401).send({error: 'Token malformated'});
+        if (!/^Bearer$/i.test(scheme))
+            throw new Error('Token malformatted');
 
-    jwt.verify(token, authConfig.secret, (err, decoded) =>{
-        if(err) return res.status(401).send({error: 'Token invalid'});
+        const decoded = await jwt.verify(token, authConfig.secret);
+
+        if (!decoded.id)
+            throw new Error('Invalid token');
+
         req.userId = decoded.id;
-
-        return next();
-    });
-
+        next();
+    } catch (error) {
+        return res.status(401).json({ error: error.message });
+    }
 };
