@@ -7,9 +7,6 @@ const authConfig = require('../config/auth.json');
 const enviarEmail = require('../functions/sendMail')
 const User = require('../models/UserModel');
 
-const stripe = require('stripe')('sk_test_51Mw9XNBzmAAATyiFwz37GfPX2Mw8yGNCNl1X6xjTTA5gqhkXtaT0IMzmc1m9N4KV3RsiOwl1TaIDKWshZC7lwHOI00wtU8SOot');
-
-
 function generateToken(params = {}) {
     return jwt.sign(params, authConfig.secret)
 }
@@ -17,7 +14,7 @@ class UserController {
 
     // Cria um novo usuário
     static async criarUsuario(req, res) {
-        const { name, email, password, userCpf, parentsControl, passwordParents, pushToken } = req.body;
+        const { nome, email, password, userCpf, parentsControl, passwordParents, pushToken } = req.body;
         const { instituicaoid, turmaid } = req.headers;
 
         try {
@@ -26,13 +23,12 @@ class UserController {
                 return res.status(400).json({ error: 'Este e-mail já está cadastrado' });
             }
 
-            // Valida o CPF
             if (!cpf.isValid(userCpf)) {
                 return res.status(400).json({ error: 'CPF inválido' });
             }
 
             const novoUsuario = await User.create({
-                name,
+                nome,
                 email,
                 password,
                 cpf: userCpf,
@@ -42,13 +38,6 @@ class UserController {
                 turma: turmaid,
                 pushToken: pushToken ? pushToken : ""
             });
-
-            // Envia o email de boas-vindas
-            const destinatario = email;
-            const assunto = 'Boas vindas ao Schoob!';
-            const conteudo = `Olá ${name},\n\nBem-vindo ao nosso aplicativo! Seu cadastro foi confirmado e estamos aguardando a confirmação da sua instituição de ensino, você será avisado por e-mail assim que foi liberado.\n\nAtenciosamente,\nEquipe do Aplicativo`;
-
-            await enviarEmail(destinatario, assunto, conteudo);
 
             return res.status(201).json(novoUsuario);
         } catch (error) {
@@ -114,7 +103,7 @@ class UserController {
     // Atualiza um usuário pelo ID
     static async atualizarUsuario(req, res) {
         const { usuarioId } = req.params;
-        const { name, email, cpf, dtNascimento, parentsControl, passwordParents, avatar, pushToken, apelido } = req.body;
+        const { nome, email, cpf, dtNascimento, parentsControl, passwordParents, avatar, pushToken, apelido } = req.body;
         const { instituicaoid, turmaid } = req.headers;
         //caso o usuário passe um atributo com o nome diferente n está exibindo mensgem de erro: "nome"
 
@@ -135,7 +124,7 @@ class UserController {
             }
 
             const updates = {};
-            if (name) updates.name = name;
+            if (nome) updates.nome = nome;
             if (email) updates.email = email;
             if (cpf) updates.cpf = cpf;
             if (dtNascimento) updates.dtNascimento = dtNascimento;
@@ -214,7 +203,7 @@ class UserController {
             });
 
             const assunto = "Recuperação de Senha"
-            const conteudo = `Olá ${user.name}, tudo bem?Aparentemente você esqueceu/perdeu sua senha né? :( Não tem problema! Utilize este código no seu aplicativo para criar uma nova senha! Seu código é: ${token} e ele expira daqui uma hora!`
+            const conteudo = `Olá ${user.nome}, tudo bem?Aparentemente você esqueceu/perdeu sua senha né? :( Não tem problema! Utilize este código no seu aplicativo para criar uma nova senha! Seu código é: ${token} e ele expira daqui uma hora!`
 
             await enviarEmail(email, assunto, conteudo).then(() => {
                 console.log("Funcionou, email enviado com sucesso!")

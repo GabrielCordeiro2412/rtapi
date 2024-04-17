@@ -1,10 +1,12 @@
 const mongoose = require('../database/index')
 const { Schema } = require('../database/index');
+// const enviarEmail = require('../functions/sendMail')
+const { enviarEmailSalvar } = require('../hooks/userHooks')
 
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
-    name: {
+    nome: {
         type: String,
         require: true,
     },
@@ -16,7 +18,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         require: true,
     },
-    apelido:{
+    apelido: {
         type: String,
         require: true,
     },
@@ -59,12 +61,12 @@ const userSchema = new mongoose.Schema({
         ref: 'Turma',
         require: true,
     },
-    active:{
+    active: {
         type: Boolean,
         require: true,
         default: false
     },
-    avatar:{
+    avatar: {
         type: Number,
         require: true,
     },
@@ -89,8 +91,11 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function (next) {
     const hash = await bcrypt.hash(this.password, 10);
     this.password = hash;
-
     next(); this;
+})
+
+userSchema.post('save', function (user) {
+    enviarEmailSalvar(user)
 })
 
 const User = mongoose.model('User', userSchema);

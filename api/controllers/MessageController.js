@@ -101,7 +101,7 @@ class MessageController {
             const allUniqueUsers = [...new Set([...uniqueSenders, ...uniqueReceivers])];
 
             // Busque os detalhes completos dos usuários
-            const chatUsers = await User.find({ _id: { $in: allUniqueUsers } }).populate("turma instituicao").sort({ name: 1 });
+            const chatUsers = await User.find({ _id: { $in: allUniqueUsers } }).populate("turma instituicao").sort({ nome: 1 });
 
             // Crie um objeto para armazenar as últimas mensagens
             const lastMessages = {};

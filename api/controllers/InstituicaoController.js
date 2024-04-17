@@ -4,7 +4,7 @@ const { cnpj } = require('cpf-cnpj-validator');
 const User = require('../models/UserModel');
 const stripe = require('stripe')(process.env.SECRET_STRIPE_CODE);
 const enviarEmail = require('../functions/sendMail')
-const {generateLicense} = require('../utils/licenseUtils')
+const { generateLicense } = require('../utils/licenseUtils')
 const authConfig = require('../config/auth.json');
 const bcrypt = require('bcryptjs');
 
@@ -62,10 +62,8 @@ class InstituicaoController {
                 cnpj: instCnpj,
                 plano: idplano,
             })
-            console.log(inst._id)
 
-            const license = await generateLicense(inst._id, idplano)
-            console.log(license)
+            await generateLicense(inst._id, idplano)
 
             return res.status(200).json(inst)
         } catch (error) {
@@ -73,11 +71,11 @@ class InstituicaoController {
         }
     }
 
-    static async loginInstituicao(req, res){
+    static async loginInstituicao(req, res) {
         const { email, password } = req.body;
         try {
             const instituicaoExistente = await Instituicao.findOne({ email: email });
-            
+
             if (!instituicaoExistente) {
                 return res.status(401).json({ error: 'E-mail inválido' });
             }
@@ -111,7 +109,7 @@ class InstituicaoController {
             const inst = await Instituicao.findById(instid)
 
             if (!inst)
-                return res.status(404).json({ Mensagem: "Não Encontrado" })
+                return res.status(404).json({ Mensagem: "Instituição não encontrad" })
 
             await Instituicao.findByIdAndDelete({ _id: instid })
             return res.json("Instituição deleteda com sucesso!")
@@ -208,47 +206,74 @@ class InstituicaoController {
     }
 
     static async aprovarUsuario(req, res) {
-        const { userid } = req.headers;
-        const {aprovado} = req.body;
-    
+        const { userid, instid } = req.headers;
+        const { aprovado } = req.body;
+
         try {
-            const user = await User.findById(userid);
-    
+            const user = await User.findById(userid).populate('instituicao');
+            const inst = await Instituicao.findById(instid);
+
             if (!user) {
                 return res.status(404).json({ error: "Usuário não encontrado" });
             }
-    
+
+            if (!inst) {
+                return res.status(404).json({ error: "Instituição não encontrada" });
+            }
+
             if (aprovado) {
                 if (user.active) {
                     return res.status(401).json({ error: "Usuário já aprovado" });
                 }
-    
+
+                if(user.instituicao._id.toString() != inst._id.toString()){
+
+                    return res.status(401).json({ error: "Você não pode aprovar usuários de outra instituição" });
+                }
+
                 await User.updateOne({ _id: userid }, { $set: { active: true } });
-    
+
                 const destinatario = user.email;
                 const assunto = 'Schoob - Cadastro aprovado!';
-                const conteudo = `Parabéns, ${user.name}! Seu cadastro foi aprovado pela sua instituição de ensino. \nAgora você pode usufruir de nossos serviços!\n\nAtenciosamente,\nEquipe Schoob.`;
-    
+                const conteudo = `Parabéns, ${user.nome}! Seu cadastro foi aprovado pela sua instituição de ensino. \nAgora você pode usufruir de nossos serviços!\n\nAtenciosamente,\nEquipe Schoob.`;
+
                 await enviarEmail(destinatario, assunto, conteudo);
-    
-                return res.status(200).send({message: "Cadastro liberado!"});
+
+                return res.status(200).send({ message: "Cadastro liberado!" });
             } else {
                 const destinatario = user.email;
                 const assunto = 'Schoob - Conta não aprovada!';
-                const conteudo = `Poxa, ${user.name}, infelizmente sua instituição de ensino reprovou seu cadastro! Tente novamente ou entre em contato com a sua instituição para saber o motivo da reprovação!\n\nAtenciosamente,\nEquipe Schoob.`;
-    
+                const conteudo = `Poxa, ${user.nome}, infelizmente sua instituição de ensino reprovou seu cadastro! Tente novamente ou entre em contato com a sua instituição para saber o motivo da reprovação!\n\nAtenciosamente,\nEquipe Schoob.`;
+
                 await enviarEmail(destinatario, assunto, conteudo);
-    
+
                 await User.findByIdAndDelete(userid);
-    
+
                 return res.status(200).send({ message: "Usuário deletado!" });
             }
         } catch (error) {
-            console.error('Erro ao aprovar o cadastro:', error);
             return res.status(500).json({ error: 'Não foi possível aprovar o cadastro' });
         }
     }
-    
+
+    static async usuariosPendentes(req, res) {
+        const { instid } = req.headers;
+        try {
+            const inst = await Instituicao.findById(instid);
+            if (!inst) {
+                return res.status(404).json({ error: "Instituição não encontrada" });
+            }
+
+            const usersToApprove = await User.find({active: false, instituicao: instid})
+
+            return res.status(200).json(usersToApprove);
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json({ error: 'Não foi possível buscar os usuários pendentes de aprovação' });
+
+        }
+    }
+
 }
 
 module.exports = InstituicaoController

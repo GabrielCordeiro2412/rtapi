@@ -2,6 +2,8 @@ const mongoose = require('../database/index')
 const { Schema } = require('../database/index');
 const crypto = require('crypto');
 
+const { enviarEmailSalvar } = require('../hooks/instituicaoHooks')
+
 const bcrypt = require('bcryptjs');
 
 const instituicaoSchema = new mongoose.Schema({
@@ -48,11 +50,15 @@ const instituicaoSchema = new mongoose.Schema({
     }
 })
 
-instituicaoSchema.pre('save', async function(next){
+instituicaoSchema.pre('save', async function (next) {
     const hash = await bcrypt.hash(this.password, 10);
     this.password = hash;
 
-    next();this;
+    next(); this;
+})
+
+instituicaoSchema.post('save', function (inst) {
+    enviarEmailSalvar(inst);
 })
 
 const Instituicao = mongoose.model('Instituicao', instituicaoSchema);
