@@ -5,9 +5,16 @@ const User = require('../models/UserModel');
 const stripe = require('stripe')(process.env.SECRET_STRIPE_CODE);
 const enviarEmail = require('../functions/sendMail')
 const {generateLicense} = require('../utils/licenseUtils')
+const authConfig = require('../config/auth.json');
+const bcrypt = require('bcryptjs');
+
+const jwt = require('jsonwebtoken');
+
+function generateToken(params = {}) {
+    return jwt.sign(params, authConfig.secret)
+}
 
 class InstituicaoController {
-
     static async createIntent(req, res) {
         const { idplano } = req.headers;
         try {
@@ -61,6 +68,29 @@ class InstituicaoController {
             console.log(license)
 
             return res.status(200).json(inst)
+        } catch (error) {
+            return res.json(error)
+        }
+    }
+
+    static async loginInstituicao(req, res){
+        const { email, password } = req.body;
+        try {
+            const instituicaoExistente = await Instituicao.findOne({ email: email });
+            
+            if (!instituicaoExistente) {
+                return res.status(401).json({ error: 'E-mail inválido' });
+            }
+
+            const senhaCorreta = await bcrypt.compare(password, instituicaoExistente.password);
+            if (!senhaCorreta) {
+                return res.status(401).json({ error: 'Senha inválida' });
+            }
+
+            instituicaoExistente.password = undefined;
+
+            return res.status(200).json({ instituicao: instituicaoExistente, token: generateToken({ id: instituicaoExistente.id }) });
+
         } catch (error) {
             return res.json(error)
         }

@@ -48,11 +48,11 @@ const instituicaoSchema = new mongoose.Schema({
     }
 })
 
-instituicaoSchema.pre('save', async function (next) {
-    const hash = bcrypt.hash(this.password, 10);
+instituicaoSchema.pre('save', async function(next){
+    const hash = await bcrypt.hash(this.password, 10);
     this.password = hash;
 
-    next(); this;
+    next();this;
 })
 
 const Instituicao = mongoose.model('Instituicao', instituicaoSchema);

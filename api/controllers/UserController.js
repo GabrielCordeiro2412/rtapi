@@ -1,11 +1,14 @@
-const User = require('../models/UserModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { cpf } = require('cpf-cnpj-validator');
+const crypto = require('crypto');
+
 const authConfig = require('../config/auth.json');
 const enviarEmail = require('../functions/sendMail')
+const User = require('../models/UserModel');
+
 const stripe = require('stripe')('sk_test_51Mw9XNBzmAAATyiFwz37GfPX2Mw8yGNCNl1X6xjTTA5gqhkXtaT0IMzmc1m9N4KV3RsiOwl1TaIDKWshZC7lwHOI00wtU8SOot');
-const crypto = require('crypto');
+
 
 function generateToken(params = {}) {
     return jwt.sign(params, authConfig.secret)
@@ -57,18 +60,12 @@ class UserController {
     //Login do usuario
     static async login(req, res) {
         const { email, password } = req.body;
-        console.log(req.body)
         try {
-            // Busca o usuário pelo e-mail
             const usuarioEmailExistente = await User.findOne({ email }).populate('turma instituicao');
-            // Verifica se o usuário foi encontrado
-            console.log(usuarioEmailExistente)
             if (!usuarioEmailExistente) {
                 return res.status(401).json({ error: 'E-mail ou senha inválidos' });
             }
-
-            // Verifica se a senha fornecida coincide com a senha armazenada no banco de dados
-            const senhaCorreta = bcrypt.compare(password, usuarioEmailExistente.password);
+            const senhaCorreta = await bcrypt.compare(password, usuarioEmailExistente.password);
             if (!senhaCorreta) {
                 return res.status(401).json({ error: 'E-mail ou senha inválidos' });
             }
