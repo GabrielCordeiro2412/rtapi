@@ -105,19 +105,10 @@ class UserController {
         const { usuarioId } = req.params;
         const { nome, email, cpf, dtNascimento, parentsControl, passwordParents, avatar, pushToken, apelido } = req.body;
         const { instituicaoid, turmaid } = req.headers;
-        //caso o usuário passe um atributo com o nome diferente n está exibindo mensgem de erro: "nome"
-
-        const token = req.headers.authorization;
-        if (!token) {
-            return res.status(401).json({ error: 'Acesso não autorizado' });
-        }
 
         try {
 
-            const decodedToken = jwt.verify(token, authConfig.secret);
-            const userId = decodedToken.id;
-
-            const usuario = await User.findById(userId);
+            const usuario = await User.findById(usuarioId);
 
             if (!usuario) {
                 return res.status(404).json({ error: 'Usuário não encontrado' });

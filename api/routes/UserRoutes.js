@@ -5,7 +5,7 @@ const jwtMiddleware = require('../middlewares/auth')
 const router = Router();
 
 router.post('/usuario', UserController.criarUsuario)
-    .get('/login', UserController.login)
+    .post('/login', UserController.login)
     .post('/usuario/forgotpassword', UserController.forgotPassword)
     .post('/usuario/resetpassword', UserController.resetPassword)
     .post('/usuario/validateCode', UserController.validatePassCode)
