@@ -3,7 +3,7 @@ const User = require('../models/UserModel')
 
 class AnotacaoController {
     static async saveAnotacao(req, res) {
-        const { texto } = req.body;
+        const { texto, dataLimite } = req.body;
         const {userid} = req.headers;
         console.log(texto, userid)
         try {
@@ -12,8 +12,24 @@ class AnotacaoController {
 
             const anotacao = await Anotacao.create({
                 texto,
-                user: userid
+                user: userid,
+                dataLimite: dataLimite
             });
+
+            res.status(201).send(anotacao);
+        } catch (error) {
+            return res.send(error)
+        }
+    }
+
+    static async editAnotacao(req, res) {
+        const { texto, dataLimite } = req.body;
+        const {userid, anotacaoid} = req.headers;
+        try {
+            const user = await User.findById(userid)
+            if(!user) return res.status(404).send({message: "Usuário não encontrado"})
+
+            const anotacao = await Anotacao.findByIdAndUpdate(anotacaoid, {texto: texto, dataLimite: dataLimite})
 
             res.status(201).send(anotacao);
         } catch (error) {

@@ -10,6 +10,10 @@ const AnotacaoSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'User',
         require: true,
+    },
+    dataLimite: {
+        type: Date,
+        require: false
     }
 }, {
     timestamps: true
